@@ -38,4 +38,62 @@ RegistrationController(registerForActivity, cancelRegistration),
 CheckinController(generateCheckinCode, checkinUser),  
 HoursController(viewTotalHours, generateProof)  
 
-Middleware
+
+
+
+activities:
+| 字段          | 类型                        | 说明                                  |
+| ----------- | ------------------------- | ----------------------------------- |
+| id          | integer PK, autoincrement | 活动 ID                               |
+| title       | varchar                   | 活动标题                                |
+| description | text                      | 活动描述                                |
+| time        | datetime                  | 活动时间                                |
+| location    | varchar                   | 活动地点                                |
+| capacity    | integer                   | 限制人数                                |
+| status      | varchar（check 约束）         | 'published' / 'cancelled' / 'draft' |
+| created_by  | integer                   | 创建者（关联 users.id）                    |
+| created_at  | datetime                  | 创建时间（Laravel 自动维护）                  |
+| updated_at  | datetime                  | 更新时间                                |
+
+checkins:
+| 字段          | 类型                        | 说明      |
+| ----------- | ------------------------- | ------- |
+| id          | integer PK, autoincrement | 签到记录 ID |
+| activity_id | integer                   | 对应活动    |
+| user_id     | integer                   | 签到用户    |
+| timestamp   | datetime                  | 签到时间    |
+| created_at  | datetime                  | 创建时间    |
+| updated_at  | datetime                  | 更新时间    |
+
+registrations:
+| 字段                | 类型         | 说明                       |
+| ----------------- | ---------- | ------------------------ |
+| id                | integer PK |                          |
+| user_id           | integer FK | 报名者 id                   |
+| activity_id       | integer FK | 活动 id                    |
+| registration_time | datetime   | 报名时间                     |
+| status            | varchar    | `registered / cancelled` |
+| created_at        | datetime   |                          |
+| updated_at        | datetime   |                          |
+
+
+users:
+| 字段             | 类型             | 说明                        |
+| -------------- | -------------- | ------------------------- |
+| id             | integer PK     |                           |
+| name           | varchar        | 用户名                       |
+| email          | varchar unique | 邮箱（唯一）                    |
+| password       | varchar        | 密码（Hash 后）                |
+| role           | varchar        | `'admin'` 或 `'volunteer'` |
+| remember_token | varchar        | 记住登录                      |
+| created_at     | datetime       | 创建时间                      |
+| updated_at     | datetime       | 更新时间                      |
+
+hours:
+| 字段          | 类型         | 说明     |
+| ----------- | ---------- | ------ |
+| id          | integer PK |        |
+| user_id     | integer FK | 用户 id  |
+| total_hours | numeric    | 累计志愿时长 |
+| created_at  | datetime   |        |
+| updated_at  | datetime   |        |
