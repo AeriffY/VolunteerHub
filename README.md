@@ -47,10 +47,11 @@ activities:
 | id          | integer PK, autoincrement | 活动 ID                               |
 | title       | varchar                   | 活动标题                                |
 | description | text                      | 活动描述                                |
-| time        | datetime                  | 活动时间                                |
+| start_time  | datetime                  | 活动开始时间                            |
+| end_time    | datetime                  | 活动结束时间                            |
 | location    | varchar                   | 活动地点                                |
 | capacity    | integer                   | 限制人数                                |
-| status      | varchar（check 约束）         | 'published' / 'cancelled' / 'draft' |
+| status      | varchar（check 约束）       | 'published' / 'cancelled' / 'draft' / 'in_progress'/ 'completed' |
 | created_by  | integer                   | 创建者（关联 users.id）                    |
 | created_at  | datetime                  | 创建时间（Laravel 自动维护）                  |
 | updated_at  | datetime                  | 更新时间                                |
