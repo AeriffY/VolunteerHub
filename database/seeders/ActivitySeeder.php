@@ -24,5 +24,15 @@ class ActivitySeeder extends Seeder
             'status' => 'published', 
             'created_by' => $admin->id, 
         ]);
+        Activity::create([
+            'title' => 'activityForTest',
+            'description' => 'No description',
+            'start_time' => now(),
+            'end_time' => now()->addDays(3)->addHours(2), 
+            'location' => '1',
+            'capacity' => 20, // 人数限制
+            'status' => 'in_progress', 
+            'created_by' => $admin->id, 
+        ]);
     }
 }
