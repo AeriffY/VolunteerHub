@@ -73,7 +73,7 @@ email 或 password 参数格式错误将返回:
 
 
 
-详见 /app/Http/Controllers/AuthController.php
+详见 /app/Http/Controllers/UserController.php
 
 
 
