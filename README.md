@@ -32,7 +32,7 @@ Checkin(activity, user, timestamp),
 Hours(user, total_hours),  
 
 Controllers:  
-UserController(register, login, viewProfile, editProfile),  
+UserController(register, login, logout, viewProfile, editProfile),  
 ActivityController(createActivity, editActivity, cancelActivity, listActivities, viewActivity),  
 RegistrationController(registerForActivity, cancelRegistration),  
 CheckinController(generateCheckinCode, checkinUser),  
