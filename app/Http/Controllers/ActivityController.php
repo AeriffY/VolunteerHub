@@ -14,7 +14,7 @@ class ActivityController extends Controller
         $user = $request->user();
         if($activity->status!=='in_progress') {
             return response()->json([
-                'message'=>'Registration failed, as this activity is not currently active'
+                'message'=>'notActive'
             ], 400);
         }
 
@@ -22,7 +22,7 @@ class ActivityController extends Controller
         $hasRegistered = Registration::where('user_id', $user->id)->where('activity_id', $activity->id)->exists();
         if($hasRegistered) {
             return response()->json([
-                'message'=>'Registration failed, as you\'ve already registered for this activity'
+                'message'=>'alreadyRegistered'
             ], 409);
         }
 
@@ -32,7 +32,7 @@ class ActivityController extends Controller
                 $locked = $lock->first();
                 if($locked->registrations()->count()>=$locked->capacity) {
                     return response()->json([
-                        'message'=>'Registration failed, as this activity is full'
+                        'message'=>'fullActivity'
                     ], 400);
                 }
                 Registration::create([
@@ -46,5 +46,6 @@ class ActivityController extends Controller
                 ], 201);
             }
         );
+        return $trans;
     }
 }

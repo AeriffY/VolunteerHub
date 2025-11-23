@@ -25,6 +25,6 @@ Route::middleware('auth:sanctum')->group(function () {
   
     Route::post('/logout', [AuthController::class, 'logout']);
     
-    Route::post('/activities/{activity}/attend', [ActivityController::class, 'registerForActivity']);
+    Route::post('/activities/{activity}/register', [ActivityController::class, 'registerForActivity']);
     
 });

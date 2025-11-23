@@ -15,7 +15,7 @@ class AuthController extends Controller
         ]);
         $Authed = Auth::attempt($valid);
         if(!$Authed) {
-            return response()->json(['message'=>'Incorrect account or password.'], 401);
+            return response()->json(['message'=>'IncorrectAccountOrPassword'], 401);
         } else {
             $user = $request->user();
             $plainToken = $user->createToken('authToken')->plainTextToken;
@@ -24,7 +24,7 @@ class AuthController extends Controller
                 'accessToken'=>$plainToken,
                 'tokenType'=>'Bearer',
                 'user'=>$user,
-            ]);
+            ], 201);
         }
         
     }
@@ -34,7 +34,7 @@ class AuthController extends Controller
         $user = $request->user();
         $user->currentAccessToken()->delete();
         return response()->json([
-            'message'=>'logout success'
+            'message'=>'logoutSuccess'
         ], 200);
     }
 }
