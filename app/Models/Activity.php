@@ -35,7 +35,7 @@ class Activity extends Model
         return $this->belongsTo(User::class, 'created_by');
     }
 
-    public function registration(){
+    public function registrations(){
         return $this->hasMany(Registration::class);
     }
 
