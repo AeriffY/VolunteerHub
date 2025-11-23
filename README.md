@@ -24,67 +24,77 @@ iii.活动回顾：活动结束后可上传图文回顾。
 
 iv.消息通知：向报名者推送活动提醒、变更通知等.  
 
+Models:  
+User(basic information/roles:admin, volunteer),  
+Activity(title, description, time, location, capacity, status),  
+Registration(user, activity, registration_time, status),  
+Checkin(activity, user, timestamp),  
+Hours(user, total_hours),  
 
+Controllers:  
+UserController(register, login, viewProfile, editProfile),  
+ActivityController(createActivity, editActivity, cancelActivity, listActivities, viewActivity),  
+RegistrationController(registerForActivity, cancelRegistration),  
+CheckinController(generateCheckinCode, checkinUser),  
+HoursController(viewTotalHours, generateProof)  
 
-users:
-| 字段             | 类型         | 说明                                |
-| -------------- | ---------- | --------------------------------- |
-| id             | integer PK | 主键                                |
-| name           | varchar    | 用户姓名                              |
-| email          | varchar    | 邮箱（唯一）                            |
-| password       | varchar    | 密码                                |
-| role           | varchar    | 角色：admin / volunteer，默认 volunteer |
-| remember_token | varchar    | Laravel 记住登录用                     |
-| created_at     | datetime   | 创建时间                              |
-| updated_at     | datetime   | 更新时间                              |
 
 
 
 activities:
-| 字段          | 类型         | 说明                   |
-| ----------- | ---------- | -------------------- |
-| id          | integer PK | 主键                   |
-| title       | varchar    | 活动标题                 |
-| description | text       | 活动描述                 |
-| start_time  | datetime   | 活动开始时间               |
-| end_time    | datetime   | 活动结束时间               |
-| location    | varchar    | 活动地点                 |
-| capacity    | integer    | 活动容量                 |
-| status      | varchar    | 活动状态，默认 draft        |
-| created_by  | integer FK | 关联创建者用户 ID（users.id） |
-| created_at  | datetime   | 创建时间                 |
-| updated_at  | datetime   | 更新时间                 |
-
+| 字段          | 类型                        | 说明                                  |
+| ----------- | ------------------------- | ----------------------------------- |
+| id          | integer PK, autoincrement | 活动 ID                               |
+| title       | varchar                   | 活动标题                                |
+| description | text                      | 活动描述                                |
+| start_time  | datetime                  | 活动开始时间                            |
+| end_time    | datetime                  | 活动结束时间                            |
+| location    | varchar                   | 活动地点                                |
+| capacity    | integer                   | 限制人数                                |
+| status      | varchar（check 约束）       | 'published' / 'cancelled' / 'draft' / 'in_progress'/ 'completed' |
+| created_by  | integer                   | 创建者（关联 users.id）                    |
+| created_at  | datetime                  | 创建时间（Laravel 自动维护）                  |
+| updated_at  | datetime                  | 更新时间                                |
 
 checkins:
-| 字段          | 类型         | 说明                   |
-| ----------- | ---------- | -------------------- |
-| id          | integer PK | 主键                   |
-| activity_id | integer FK | 活动 ID（activities.id） |
-| user_id     | integer FK | 用户 ID（users.id）      |
-| timestamp   | datetime   | 签到时间                 |
-| created_at  | datetime   | 创建记录时间               |
-| updated_at  | datetime   | 更新时间                 |
-
+| 字段          | 类型                        | 说明      |
+| ----------- | ------------------------- | ------- |
+| id          | integer PK, autoincrement | 签到记录 ID |
+| activity_id | integer                   | 对应活动    |
+| user_id     | integer                   | 签到用户    |
+| timestamp   | datetime                  | 签到时间    |
+| created_at  | datetime                  | 创建时间    |
+| updated_at  | datetime                  | 更新时间    |
 
 registrations:
-| 字段                | 类型         | 说明                                        |
-| ----------------- | ---------- | ----------------------------------------- |
-| id                | integer PK | 主键                                        |
-| user_id           | integer FK | 报名用户 ID（users.id）                         |
-| activity_id       | integer FK | 活动 ID（activities.id）                      |
-| registration_time | datetime   | 报名时间                                      |
-| status            | varchar    | 报名状态：registered / cancelled，默认 registered |
-| created_at        | datetime   | 创建时间                                      |
-| updated_at        | datetime   | 更新时间                                      |
+| 字段                | 类型         | 说明                       |
+| ----------------- | ---------- | ------------------------ |
+| id                | integer PK |                          |
+| user_id           | integer FK | 报名者 id                   |
+| activity_id       | integer FK | 活动 id                    |
+| registration_time | datetime   | 报名时间                     |
+| status            | varchar    | `registered / cancelled` |
+| created_at        | datetime   |                          |
+| updated_at        | datetime   |                          |
 
 
+users:
+| 字段             | 类型             | 说明                        |
+| -------------- | -------------- | ------------------------- |
+| id             | integer PK     |                           |
+| name           | varchar        | 用户名                       |
+| email          | varchar unique | 邮箱（唯一）                    |
+| password       | varchar        | 密码（Hash 后）                |
+| role           | varchar        | `'admin'` 或 `'volunteer'` |
+| remember_token | varchar        | 记住登录                      |
+| created_at     | datetime       | 创建时间                      |
+| updated_at     | datetime       | 更新时间                      |
 
 hours:
-| 字段          | 类型         | 说明              |
-| ----------- | ---------- | --------------- |
-| id          | integer PK | 主键              |
-| user_id     | integer FK | 用户 ID（users.id） |
-| total_hours | numeric    | 总工时，默认 0        |
-| created_at  | datetime   | 创建时间            |
-| updated_at  | datetime   | 更新时间            |
+| 字段          | 类型         | 说明     |
+| ----------- | ---------- | ------ |
+| id          | integer PK |        |
+| user_id     | integer FK | 用户 id  |
+| total_hours | numeric    | 累计志愿时长 |
+| created_at  | datetime   |        |
+| updated_at  | datetime   |        |
