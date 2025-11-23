@@ -17,7 +17,8 @@ class ActivitySeeder extends Seeder
         Activity::create([
             'title' => '校园清洁志愿活动',
             'description' => '清理校园主干道垃圾，美化校园环境',
-            'time' => now()->addDays(3), 
+            'start_time' => now()->addDays(3),
+            'end_time' => now()->addDays(3)->addHours(2), 
             'location' => '学校操场',
             'capacity' => 20, // 人数限制
             'status' => 'published', 
