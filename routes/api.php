@@ -2,7 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\ActivityController;
+use App\Http\Controllers\RegistrationController;
 use App\Http\Controllers\AuthController;
 
 
@@ -25,6 +25,6 @@ Route::middleware('auth:sanctum')->group(function () {
   
     Route::post('/logout', [AuthController::class, 'logout']);
     
-    Route::post('/activities/{activity}/register', [ActivityController::class, 'registerForActivity']);
+    Route::post('/activities/{activity}/register', [RegistrationController::class, 'registerForActivity']);
     
 });

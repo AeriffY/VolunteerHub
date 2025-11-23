@@ -7,7 +7,7 @@ use App\Models\Activity;
 use App\Models\Registration;
 use Illuminate\Support\Facades\DB;
 
-class ActivityController extends Controller
+class RegistrationController extends Controller
 {
     //
     public function registerForActivity(Request $request, Activity $activity){
