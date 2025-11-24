@@ -11,7 +11,7 @@ return new class extends Migration
         Schema::create('registrations', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained(); // 关联报名用户
-            $table->foreignId('activity_id')->constrained(); // 关联活动
+            $table->foreignId('activity_id')->constrained()->cascadeOnDelete(); // 关联活动
             $table->datetime('registration_time');
             $table->enum('status', ['registered', 'cancelled'])->default('registered');
             $table->timestamps();
