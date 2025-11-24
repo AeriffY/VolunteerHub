@@ -17,10 +17,6 @@
 Homestead.json
 Homestead.yaml
 Thumbs.db
-/config
-/public
-/resources
-/storage
 /tests
 .editorconfig
 .env.example
