@@ -48,27 +48,4 @@ class RegistrationController extends Controller
         );
         return $trans;
     }
-
-    public function cancelRegistration(Request $request, Activity $activity) {
-        $user = $request->user();
-        $record = Registration::where('user_id', $user->id)->where('activity_id', $activity->id)->first();
-        if(!$record) {
-            return response()->json([
-                'message'=>'notRegistered'
-            ], 404);
-
-        }
-
-        //开始了不让取消
-        if($activity->status === 'in_progress') {
-            return response()->json([
-                'message'=>'hasStarted'
-            ], 403);
-        }
-        
-        $record->delete();
-        return response()->json([
-            'message'=>'cancelSuccess'
-        ],200);
-    }
 }
