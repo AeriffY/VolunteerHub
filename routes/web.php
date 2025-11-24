@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\RegistrationController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\CheckinController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -23,3 +24,8 @@ Route::middleware(['auth', 'is_admin'])->group(function(){
     Route::delete('/admin/activities/{activity}', [AdminController::class, 'cancelActivity']);
 });
 
+Route::get('/checkin/{activity}/create', [CheckinController::class, 'gotoCheckin'])->name('checkin.create');
+Route::post('/checkin/{activity}', [CheckinController::class, 'storeCheckin'])->name('checkin.store');
+Route::middleware(['auth', 'is_admin'])->group(function () {
+    Route::post('/admin/activities/{activity}/generatecode', [CheckinController::class, 'generateCheckinCode'])->name('admin.activities.generatecode');
+});
