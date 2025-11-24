@@ -41,34 +41,25 @@ class RegistrationController extends Controller
                     'status'=>'registered',
                     'registration_time'=>now(),
                 ]);
-                return response()->json([
-                    'message'=>'Registration success'
-                ], 201);
+                return redirect()->route('activities.show', $activity->id);
             }
         );
         return $trans;
     }
 
-    public function cancelRegistration(Request $request, Activity $activity) {
+    public function cancelRegistration(Request $request, Registration $registration) {
         $user = $request->user();
-        $record = Registration::where('user_id', $user->id)->where('activity_id', $activity->id)->first();
-        if(!$record) {
-            return response()->json([
-                'message'=>'notRegistered'
-            ], 404);
-
+        if ($registration->user_id !== $user->id) {
+            return response()->json(['message' => 'Unauthorized'], 403);
         }
-
-        //开始了不让取消
-        if($activity->status === 'in_progress') {
-            return response()->json([
-                'message'=>'hasStarted'
-            ], 403);
+        $activity = $registration->activity;
+        //除了published阶段都无法取消
+        if($activity->status !== 'published') {
+            return back()->with('error', 'can not cancel registration');
         }
         
-        $record->delete();
-        return response()->json([
-            'message'=>'cancelSuccess'
-        ],200);
+        //虽然表里有一个status的enum字段, 有registered和cancelled两个值, 但是我直接删记录了
+        $registration->delete();
+        return back()->with('success', 'Registration cancelled successfully');
     }
 }
