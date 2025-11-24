@@ -15,7 +15,7 @@ class CheckinController extends Controller
     {
         $activity = Activity::findOrFail($activity_id);
 
-        if ($activity->status !== 'in_progress' && $activity->status !== 'published') {
+        if ($activity->status !== 'in_progress') {
             return response()->json([
                 'message' => 'Activity cannot be checked in at this time.'
             ], 403);
