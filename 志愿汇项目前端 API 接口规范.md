@@ -2,6 +2,13 @@
 
 **目的:** 此文档列出了前端所有 Blade 模板中通过 route(...) 函数调用的后端路由（Endpoints），用于指导后端团队实现相应的 Controller 方法和业务逻辑。
 
+Controllers（有更改，后端可自行设计匹配url和route）:
+UserController(register, login, logout, viewProfile), 删除了editProfile
+ActivityController(createActivity, storeActivity, editActivity, updateActivity, cancelActivity, listActivities, viewActivity), 新增storeActivity, updateActivity
+RegistrationController(registerForActivity, cancelRegistration),
+CheckinController(gotoCheckin, storeCheckin, generateCheckinCode), 删除了checkinUser，新增gotoCheckin, storeCheckin
+HoursController(viewTotalHours, generateProof) viewTotalHours感觉可以删除
+
 ### **一、UserController**
 
 | 路由方法 | 路由 URI | 路由名称 (Name) | 对应controller函数 | 作用描述 |
