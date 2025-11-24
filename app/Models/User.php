@@ -42,6 +42,7 @@ class User extends Authenticatable
      */
     protected $casts = [
         'email_verified_at' => 'datetime',
+        'password' => 'hashed',
     ];
     /*用户发布的活动,仅管理员*/
     public function activities()
@@ -59,5 +60,9 @@ class User extends Authenticatable
     public function checkins()
     {
         return $this->hasMany(Checkin::class);
+    }
+
+    public function hours(){
+        return $this->hasOne(Hours::class);
     }
 }
