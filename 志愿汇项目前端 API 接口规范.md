@@ -2,7 +2,7 @@
 
 **目的:** 此文档列出了前端所有 Blade 模板中通过 route(...) 函数调用的后端路由（Endpoints），用于指导后端团队实现相应的 Controller 方法和业务逻辑。
 
-Controllers（有更改，后端可自行设计匹配url和route）:
+Controllers（有更改，后端可不按照这个设计，自行设计匹配url和route）:
 
 UserController(register, login, logout, viewProfile), 删除了editProfile
 
