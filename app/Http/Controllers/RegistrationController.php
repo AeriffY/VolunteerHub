@@ -12,9 +12,9 @@ class RegistrationController extends Controller
     //
     public function registerForActivity(Request $request, Activity $activity){
         $user = $request->user();
-        if($activity->status!=='in_progress') {
+        if($activity->status!=='published') {
             return response()->json([
-                'message'=>'notActive'
+                'message'=>'unableToRegister'
             ], 400);
         }
 
