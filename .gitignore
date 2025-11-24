@@ -26,3 +26,4 @@ composer.lock
 package
 phpunit
 vite.config.js
+/public/hot
