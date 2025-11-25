@@ -3,6 +3,7 @@
 
     use Illuminate\Http\Request;
     use App\Models\Activity;
+use Illuminate\Notifications\Action;
 
     class ActivityController extends Controller {
         public function show(Request $request, Activity $activity){
@@ -19,5 +20,21 @@
             }
 
             return view('activities.show', compact('activity', 'registration', 'canCheckin'));
+        }
+
+        public function index(Request $request) {
+            $query = Activity::whereNotIn('status', ['draft', 'cancelled']);
+            if($request->filled('search')) {
+                $search = $request->input('search');
+                $query->where(function ($q) use ($search) {
+                    $q->where('title', 'like', "%{$search}%")
+                    ->orWhere('location', 'like', "%{$search}%");
+                });
+            }
+
+            $activities = $query->latest()->paginate(10);
+            $activities->appends($request->all());
+
+            return view('activities.index', compact('activities'));
         }
     }

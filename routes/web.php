@@ -7,13 +7,9 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\CheckinController;
 use App\Http\Controllers\ActivityController;
 
-// Route::get('/', function () {
-//     return view('welcome');
-// });
+
 Route::redirect('/', '/login');
-Route::get('/activities', function () {
-    return '占位';
-})->name('activities.index');
+
 Route::get('/profile/export-pdf', function () {
     return '占位';
 })->name('profile.exportPdf');
@@ -21,6 +17,7 @@ Route::get('/profile/export-pdf', function () {
 
 Route::view('/login', 'auth.login')->name('login'); 
 Route::post('/login', [UserController::class, 'login']);
+Route::get('/activities', [ActivityController::class, 'index'])->name('activities.index');
 
 Route::post('/logout', [UserController::class, 'logout'])->name('logout');
 
@@ -38,9 +35,12 @@ Route::middleware('auth')->group(function () {
 });
 
 Route::middleware(['auth', 'is_admin'])->group(function(){
-    Route::post('/admin/activities', [AdminController::class, 'storeActivity']);
-    Route::post('/admin/activities/{activity}', [AdminController::class, 'updateActivity']);
-    Route::delete('/admin/activities/{activity}', [AdminController::class, 'cancelActivity']);
+    Route::post('/admin/activities', [AdminController::class, 'storeActivity'])->name('admin.activities.store');
+    Route::get('/admin/activities/{activity}/edit', [AdminController::class, 'editPage'])->name('admin.activities.edit');
+    Route::put('/admin/activities/{activity}', [AdminController::class, 'updateActivity'])->name('admin.activities.update');
+    Route::delete('/admin/activities/{activity}', [AdminController::class, 'cancelActivity'])->name('admin.activities.destroy');
+    Route::get('/admin/activities', [AdminController::class, 'index'])->name('admin.activities.index');
+    Route::get('/admin/activities/create', [AdminController::class, 'createActivityPage'])->name('admin.activities.create');
 });
 
 

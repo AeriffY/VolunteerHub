@@ -75,7 +75,7 @@
                                 {{-- 注意：这里我们遵循了您代码中已有的 confirm() 模式。在生产环境中，应使用 Bootstrap Modal 替代。 --}}
                                 <form action="{{ route('admin.activities.destroy', $activity->id) }}" method="POST" class="d-inline">
                                     @csrf
-                                    @method('PATCH') {{-- 使用 PATCH 方法更新状态 --}}
+                                    @method('DELETE') 
                                     <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('确定要取消活动: {{ $activity->title }} 吗？此操作不可撤销。')">
                                         <i class="bi bi-x-circle"></i> 取消活动
                                     </button>
@@ -83,7 +83,7 @@
                             @endif
 
                             @if($activity->status == 'in_progress')
-                                <form action="{{ route('admin.activities.generatecode , $activity->id) }}" method="POST" class="d-inline">
+                                <form action="{{ route('admin.activities.generatecode' , $activity->id) }}" method="POST" class="d-inline">
                                     @csrf
                                     <button type="submit" class="btn btn-sm btn-info" onclick="return confirm('确定要生成新的签到码吗？旧签到码将失效。')">
                                         <i class="bi bi-key"></i> 签到码
