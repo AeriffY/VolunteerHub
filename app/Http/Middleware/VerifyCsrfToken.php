@@ -19,5 +19,6 @@ class VerifyCsrfToken extends Middleware
         '/activities/*',
         '/admin/activities',
         '/admin/activities/*',
+        '/registrations/*',
     ];
 }

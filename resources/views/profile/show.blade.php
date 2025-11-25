@@ -34,7 +34,7 @@
 
                     @if ($isExcellentVolunteer)
                         <div class="d-flex align-items-center justify-content-center flex-column">
-                            <img src="great.png" 
+                            <img src="{{ asset('images/medal.png') }}" 
                                  alt="优秀志愿者勋章" 
                                  class="img-fluid mb-2 rounded-circle shadow-sm" 
                                  style="width: 80px; height: 80px; border: 3px solid #28a745;">
@@ -74,4 +74,5 @@
             <div class="alert alert-info">您还没有报名任何活动。</div>
         @endforelse
     </div>
+
 @endsection
