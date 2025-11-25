@@ -3,6 +3,7 @@
 
     use Illuminate\Http\Request;
     use App\Models\Activity;
+    use App\Models\Checkin;
 use Illuminate\Notifications\Action;
 
     class ActivityController extends Controller {
@@ -19,7 +20,9 @@ use Illuminate\Notifications\Action;
                 $canCheckin = true; 
             }
 
-            return view('activities.show', compact('activity', 'registration', 'canCheckin'));
+            $hasCheckedIn = Checkin::where('user_id', $user->id)->where('activity_id', $activity->id)->exists();
+
+            return view('activities.show', compact('activity', 'registration', 'canCheckin', 'hasCheckedIn'));
         }
 
         public function index(Request $request) {

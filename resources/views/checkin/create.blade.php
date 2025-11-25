@@ -39,7 +39,7 @@
                                 @error('checkin_code')
                                     <div class="invalid-feedback text-center mt-2">
                                         {{ $message }}
-                                        <div class="small text-danger">(签到码错误或已过期)</div> {{-- 将提示信息稍微弱化并居中 --}}
+                                        <div class="small text-danger"></div> {{-- 将提示信息稍微弱化并居中 --}}
                                     </div>
                                 @enderror
                             </div>

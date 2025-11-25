@@ -24,9 +24,7 @@ class CheckinController extends Controller
             ], 403);
         }
 
-        return response()->json([
-            'activity' => $activity,
-        ]);
+        return view('checkin.create', compact('activity'));
     }
 
     //储存签到结果
@@ -47,9 +45,8 @@ class CheckinController extends Controller
         ]);
 
         if ($activity->checkin_code !== $validated['checkin_code']) {
-            return response()->json([
-                'message' => 'Invalid checkin code.'
-            ], 422);
+            $msg = "签到码错误，请重试。";
+            return back()->withErrors(['checkin_code' => $msg])->withInput();
         }
 
         $hasCheckedIn = Checkin::where('user_id', $user->id)->where('activity_id', $activity->id)->exists();
@@ -66,11 +63,7 @@ class CheckinController extends Controller
 
             $duration = $activity->end_time->floatDiffInHours($activity->start_time);
             $user->hours()->firstOrCreate([], ['total_hours'=>0])->increment('total_hours', $duration);
-            return response()->json([
-                'message' => 'Checkin successful.',
-                'added_hours' => $duration,
-                'checkin' => $checkin
-            ], 201);
+            return view('activities.show');
         });
     }
 
@@ -84,9 +77,7 @@ class CheckinController extends Controller
         $activity->checkin_code = $code;
         $activity->save();
 
-        return response()->json([
-            'message' => 'Checkin code generated.',
-            'checkin_code' => $code
-        ]);
+        $message = "签到码生成成功：{$code}";
+        return back()->with('success', $message);
     }
 }
