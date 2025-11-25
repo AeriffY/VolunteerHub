@@ -13,7 +13,8 @@
                 'description'=>'required|string',
 
                 //是否应该根据start_time和end_time来判断status是published还是in_progress?
-                'status' => 'sometimes|in:published,cancelled,draft,in_progress,completed',
+                //status只由管理员手动设置为draft、published或cancelled, ,in_progress,completed状态由系统自动更新
+                'status' => 'sometimes|in:published,cancelled,draft',
                 'start_time'=>'required|date|after:now',
                 'end_time'=>'required|date|after:start_time',
                 'capacity'=>'required|integer|min:1'
@@ -40,7 +41,8 @@
                 'start_time' => 'sometimes|date',
                 'end_time' => 'sometimes|date',
                 'capacity' => 'sometimes|integer|min:1',
-                'status' => 'sometimes|in:published,cancelled,draft,in_progress,completed' 
+                //in_progress,completed状态由系统自动更新
+                'status' => 'sometimes|in:published,cancelled,draft' 
             ]);
 
             if(isset($validated['capacity'])) {
@@ -52,6 +54,11 @@
                 }
             }
 
+            // 已开始的活动不能修改 start_time
+            if (isset($validated['start_time']) && $activity->status === 'in_progress') {
+                return back()->withErrors(['start_time'=>'Cannot modify start time after activity has started'])->withInput();
+            }
+
             $newStart = isset($validated['start_time']) ? strtotime($validated['start_time']) : $activity->start_time->timestamp;
             $newEnd = isset($validated['end_time']) ? strtotime($validated['end_time']) : $activity->end_time->timestamp;
             if($newStart>=$newEnd) {
@@ -60,6 +67,9 @@
             }
 
             $activity->update($validated);
+
+            $activity->updateStatus();
+
             return redirect()->route('admin.activities.index');
         }
 
@@ -69,6 +79,10 @@
         }
 
         public function cancelActivity(Activity $activity) {
+        // 活动已开始或完成不可直接删除?可选择设置 status 为 cancelled
+        if ($activity->status === 'in_progress' || $activity->status === 'completed') {
+            return back()->withErrors(['activity'=>'Cannot cancel activity that has started or completed']);
+        }
             $activity->delete();
             return redirect()->route('admin.activities.index');
         }
