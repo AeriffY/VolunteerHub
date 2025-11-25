@@ -56,7 +56,8 @@
 
             // 已开始的活动不能修改 start_time
             if (isset($validated['start_time']) && $activity->status === 'in_progress') {
-                return back()->withErrors(['start_time'=>'Cannot modify start time after activity has started'])->withInput();
+                $msg = "活动已开始，无法修改开始时间。";
+                return back()->withErrors(['start_time'=> $msg])->withInput();
             }
 
             $newStart = isset($validated['start_time']) ? strtotime($validated['start_time']) : $activity->start_time->timestamp;
@@ -81,7 +82,8 @@
         public function cancelActivity(Activity $activity) {
         // 活动已开始或完成不可直接删除?可选择设置 status 为 cancelled
         if ($activity->status === 'in_progress' || $activity->status === 'completed') {
-            return back()->withErrors(['activity'=>'Cannot cancel activity that has started or completed']);
+            $msg = "无法取消已开始或已完成的活动。";
+            return back()->withErrors(['activity' => $msg])->withInput();
         }
             $activity->delete();
             return redirect()->route('admin.activities.index');
