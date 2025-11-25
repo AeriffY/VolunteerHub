@@ -13,17 +13,13 @@ class RegistrationController extends Controller
     public function registerForActivity(Request $request, Activity $activity){
         $user = $request->user();
         if($activity->status!=='published') {
-            return response()->json([
-                'message'=>'unableToRegister'
-            ], 400);
+            $msg = '报名失败：活动不在可报名时间段内或已结束';
+            return back()->with('error', $msg);
         }
 
-        //Not user-friendly enough, I'll update the logic later
         $hasRegistered = Registration::where('user_id', $user->id)->where('activity_id', $activity->id)->exists();
         if($hasRegistered) {
-            return response()->json([
-                'message'=>'alreadyRegistered'
-            ], 409);
+            return back()->with('error', '您已经报名过了');
         }
 
         $trans = DB::transaction(
@@ -31,9 +27,7 @@ class RegistrationController extends Controller
                 $lock = Activity::where('id', $activity->id)->lockForUpdate();
                 $locked = $lock->first();
                 if($locked->registrations()->count()>=$locked->capacity) {
-                    return response()->json([
-                        'message'=>'fullActivity'
-                    ], 400);
+                    return back()->with('error', '活动名额已满');
                 }
                 Registration::create([
                     'user_id'=>$user->id,
@@ -41,7 +35,8 @@ class RegistrationController extends Controller
                     'status'=>'registered',
                     'registration_time'=>now(),
                 ]);
-                return redirect()->route('activities.show', $activity->id);
+                // return redirect()->route('activities.show', $activity->id);
+                return back()->with('success', '报名成功');
             }
         );
         return $trans;
@@ -60,6 +55,6 @@ class RegistrationController extends Controller
         
         //虽然表里有一个status的enum字段, 有registered和cancelled两个值, 但是我直接删记录了
         $registration->delete();
-        return back()->with('success', 'Registration cancelled successfully');
+        return back()->with('success', '取消报名成功');
     }
 }

@@ -13,7 +13,6 @@
                 'description'=>'required|string',
 
                 //是否应该根据start_time和end_time来判断status是published还是in_progress?
-                //fuck the database designer
                 'status' => 'sometimes|in:published,cancelled,draft,in_progress,completed',
                 'start_time'=>'required|date|after:now',
                 'end_time'=>'required|date|after:start_time',
@@ -30,12 +29,6 @@
                 'status' => $validated['status'],
                 'created_by' => $request->user()->id,
             ]);
-
-            // return response()->json([
-            //     'message'=>'publishActivitySuccess',
-            //     'data'=>$activity
-            // ], 201);
-
             return redirect()->route('admin.activities.index');
         }
 
@@ -45,10 +38,8 @@
                 'description' => 'sometimes|string',
                 'location' => 'sometimes|string',
                 'start_time' => 'sometimes|date',
-                'end_time' => 'sometimes|date|after:start_time',
+                'end_time' => 'sometimes|date',
                 'capacity' => 'sometimes|integer|min:1',
-
-                //和上面一样的问题, fuck the database designer again
                 'status' => 'sometimes|in:published,cancelled,draft,in_progress,completed' 
             ]);
 
@@ -56,26 +47,16 @@
                 $temp = $validated['capacity'];
                 $current = $activity->registrations()->count();
                 if($temp<$current) {
-                    return response()->json([
-                        'message'=>'givenDataInvalid',
-                        'errors'=>[
-                            'capacity' => [
-                                "Capacity less than the current number of registered volunteers ({$current})."
-                            ]
-                        ]
-                    ], 422);
+                    $msg = "名额上限不能少于当前已报名人数 ({$current}人)。";
+                    return back()->withErrors(['capacity' => $msg])->withInput();
                 }
             }
 
             $newStart = isset($validated['start_time']) ? strtotime($validated['start_time']) : $activity->start_time->timestamp;
             $newEnd = isset($validated['end_time']) ? strtotime($validated['end_time']) : $activity->end_time->timestamp;
             if($newStart>=$newEnd) {
-                return response()->json([
-                    'message'=>'givenDataInvalid',
-                    'errors' => [
-                        'end_time' => ['start_time later than end_time']
-                    ]
-                ], 422);
+                $msg = "开始时间不能晚于结束时间。";
+                return back()->withErrors(['end_time' => $msg, 'start_time' => " "])->withInput();
             }
 
             $activity->update($validated);
