@@ -17,13 +17,16 @@ class UserController extends Controller
         ]);
         $Authed = Auth::attempt($valid);
         if(!$Authed) {
-            return response()->json(['message'=>'IncorrectAccountOrPassword'], 401);
+            return back()->withErrors([
+                'email' => 'Incorrect account or password',
+            ])->withInput($request->except('password'));
         } else {
             $request->session()->regenerate();
-            // return response()->json([
-            //     'message'=>'login success',
-            //     'user'=>Auth::user(),
-            // ], 200);
+
+            $user = Auth::user();
+            if($user->role === 'admin') {
+                return redirect()->route('admin.activities.index');
+            }
             return redirect()->route('activities.index');
         }
         
@@ -36,9 +39,6 @@ class UserController extends Controller
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
-        // return response()->json([
-        //     'message'=>'logoutSuccess'
-        // ], 200);
         return redirect()->route('login');
     }
 
@@ -57,9 +57,6 @@ class UserController extends Controller
         $user->hours()->create(['total_hours'=>0]);
         Auth::login($user);
         $request->session()->regenerate();
-        // return response()->json([
-        //     'message'=>'signUpSuccess'
-        // ], 201);
         return redirect()->route('login');
     }
 

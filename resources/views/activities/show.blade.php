@@ -3,6 +3,36 @@
 @section('title', $activity->title)
 
 @section('content')
+    <div class="mb-4">
+        @if (session('success'))
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <i class="bi bi-check-circle-fill me-2"></i> {{ session('success') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        @endif
+
+        @if (session('error'))
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="bi bi-x-circle-fill me-2"></i> {{ session('error') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        @endif
+
+        @if (session('warning'))
+            <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                <i class="bi bi-exclamation-triangle-fill me-2"></i> {{ session('warning') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        @endif
+
+        @if (session('info'))
+            <div class="alert alert-info alert-dismissible fade show" role="alert">
+                <i class="bi bi-info-circle-fill me-2"></i> {{ session('info') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        @endif
+    </div>
+    
     <h1 class="fw-bold mb-3">{{ $activity->title }}</h1>
     
     <div class="row g-5">
@@ -43,11 +73,16 @@
                             </form>
                         @endif
 
-                        @if($canCheckin)
-                             <a href="{{ route('checkin.create', $activity->id) }}" class="btn btn-success w-100 mt-2">
-                                <i class="bi bi-qr-code-scan"></i> 前往签到
-                             </a>
-                        @endif
+                    @if(isset($hasCheckedIn) && $hasCheckedIn)
+                        <button class="btn btn-success w-100 mt-2" disabled>
+                            <i class="bi bi-check-circle-fill"></i> 您已完成签到
+                        </button>
+
+                    @elseif($canCheckin)
+                        <a href="{{ route('checkin.create', $activity->id) }}" class="btn btn-primary w-100 mt-2">
+                            <i class="bi bi-qr-code-scan"></i> 前往签到
+                        </a>
+                    @endif
 
                     @else
                         <p>您尚未报名此活动。</p>

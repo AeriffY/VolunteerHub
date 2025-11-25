@@ -19,11 +19,21 @@
 <div class="row">
     <div class="col-md-6 mb-3">
         <label for="start_time" class="form-label">活动开始时间</label>
-        <input type="datetime-local" class="form-control" id="start_time" name="start_time" value="{{ old('start_time', isset($activity->start_time) ? $activity->start_time->format('Y-m-d\TH:i') : '') }}" required>
+        <input type="datetime-local" class="form-control @error('start_time') is-invalid @enderror" id="start_time" name="start_time" value="{{ old('start_time', isset($activity->start_time) ? $activity->start_time->format('Y-m-d\TH:i') : '') }}" required>
+        @error('start_time')
+            <div class="invalid-feedback">
+                {{ $message }}
+            </div>
+        @enderror
     </div>
     <div class="col-md-6 mb-3">
         <label for="end_time" class="form-label">活动结束时间</label>
-        <input type="datetime-local" class="form-control" id="end_time" name="end_time" value="{{ old('end_time', isset($activity->end_time) ? $activity->end_time->format('Y-m-d\TH:i') : '') }}" required>
+        <input type="datetime-local" class="form-control @error('end_time') is-invalid @enderror" id="end_time" name="end_time" value="{{ old('end_time', isset($activity->end_time) ? $activity->end_time->format('Y-m-d\TH:i') : '') }}" required>
+        @error('end_time')
+            <div class="invalid-feedback">
+                {{ $message }}
+            </div>
+        @enderror
     </div>
 </div>
 
@@ -34,7 +44,12 @@
     </div>
     <div class="col-md-4 mb-3">
         <label for="capacity" class="form-label">限制人数</label>
-        <input type="number" class="form-control" id="capacity" name="capacity" value="{{ old('capacity', $activity->capacity ?? '') }}" min="1" required>
+        <input type="number" class="form-control @error('capacity') is-invalid @enderror" id="capacity" name="capacity" value="{{ old('capacity', $activity->capacity ?? '') }}" min="1" required>
+        @error('capacity')
+            <div class="invalid-feedback">
+                {{ $message }}
+            </div>
+        @enderror
     </div>
 </div>
 
