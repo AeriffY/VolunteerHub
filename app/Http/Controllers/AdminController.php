@@ -6,6 +6,7 @@
 
     class AdminController extends Controller {
         public function storeActivity(Request $request){
+            // dd('1');
             $validated = $request->validate([
                 'location'=>'required|string',
                 'title'=>'required|string',
@@ -30,10 +31,12 @@
                 'created_by' => $request->user()->id,
             ]);
 
-            return response()->json([
-                'message'=>'publishActivitySuccess',
-                'data'=>$activity
-            ], 201);
+            // return response()->json([
+            //     'message'=>'publishActivitySuccess',
+            //     'data'=>$activity
+            // ], 201);
+
+            return redirect()->route('admin.activities.index');
         }
 
         public function updateActivity(Request $request, Activity $activity) {
@@ -76,15 +79,36 @@
             }
 
             $activity->update($validated);
-            return response()->json([
-                'message'=>'updateSuccess'
-            ], 200);
+            return redirect()->route('admin.activities.index');
+        }
+
+        public function editPage(Activity $activity) {
+
+            return view('admin.activities.edit', compact('activity'));
         }
 
         public function cancelActivity(Activity $activity) {
             $activity->delete();
-            return response()->json([
-                'message' => 'cancelSuccess'
-            ], 200);
+            return redirect()->route('admin.activities.index');
+        }
+
+        //管理员后台查看活动
+        public function index(Request $request) {
+            $query = Activity::query()->latest();
+            if ($request->filled('search')) {
+                $search = $request->input('search');
+
+                $query->where(function($q) use ($search) {
+                    $q->where('title', 'like', "%{$search}%")
+                    ->orWhere('location', 'like', "%{$search}%");
+                });
+            }
+            $activities = $query->paginate(10);
+            $activities->appends($request->all());
+            return view('admin.activities.index', compact('activities'));
+        }
+
+        public function createActivityPage(Request $request){
+            return view('admin.activities.create');
         }
     }

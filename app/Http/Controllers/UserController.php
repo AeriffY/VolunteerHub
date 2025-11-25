@@ -24,7 +24,7 @@ class UserController extends Controller
             //     'message'=>'login success',
             //     'user'=>Auth::user(),
             // ], 200);
-            return redirect()->route('profile.show');
+            return redirect()->route('activities.index');
         }
         
     }
