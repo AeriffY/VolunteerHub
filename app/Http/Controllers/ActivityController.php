@@ -8,7 +8,6 @@ use Illuminate\Notifications\Action;
 
     class ActivityController extends Controller {
         public function show(Request $request, Activity $activity){
-            $activity->updateStatus(); // 每次访问前更新状态
             $user = $request->user();
             $registration = null;
             if($user) {
@@ -38,10 +37,6 @@ use Illuminate\Notifications\Action;
 
             $activities = $query->latest()->paginate(10);
             $activities->appends($request->all());
-
-            foreach($activities as $activity){
-                $activity->updateStatus();
-            }
 
             return view('activities.index', compact('activities'));
         }

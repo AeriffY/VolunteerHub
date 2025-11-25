@@ -43,17 +43,4 @@ class Activity extends Model
     public function checkin(){
         return $this->hasMany(Checkin::class);
     }
-
-    //更新活动状态
-    public function updateStatus(){
-        if ($this->status === 'cancelled') return;
-        if (now() < $this->start_time) {
-            $this->status = 'published';
-        } elseif (now() >= $this->start_time && now() < $this->end_time) {
-            $this->status = 'in_progress';
-        } else {
-            $this->status = 'completed';
-        }
-        $this->save();
-    }
 }
