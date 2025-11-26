@@ -63,7 +63,8 @@ class CheckinController extends Controller
 
             $duration = $activity->end_time->floatDiffInHours($activity->start_time);
             $user->hours()->firstOrCreate([], ['total_hours'=>0])->increment('total_hours', $duration);
-            return view('activities.show');
+            return redirect()->route('activities.show', $activity->id)
+                         ->with('success', '签到成功！已为您增加 '.$duration.' 小时志愿时长。');
         });
     }
 
