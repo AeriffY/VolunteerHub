@@ -8,12 +8,12 @@
 
     <title>{{ config('app.name', '志愿汇') }}</title>
 
-
+    <!-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"> -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
     
     <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@700&display=swap" rel="stylesheet">    
     
-    @vite(['resources/sass/app.scss', 'resources/js/app.js'])
+    @vite(['resources/sass/app.scss', 'resources/js/app.js','resources/js/bootstrap.js'])
 </head>
 <body>
     <div id="app">
@@ -27,6 +27,9 @@
                     $targetRoute = 'activities.index'; // 默认是普通用户主页
                     
                     if ($isLoggedIn) {
+                        // 登录后，检查 role 字段是否为管理员
+                        // 注意：如果 role 字段不存在，访问 Auth::user()->role 可能会导致错误。
+                        // 我们需要使用 ?? '' 来确保安全访问。
                         $userRole = Auth::user()->role ?? ''; 
                         
                         // 假设管理员角色是 'admin'，请根据你上一步调试的结果来确认这个值
@@ -46,9 +49,9 @@
                 <a class="navbar-brand" href="{{ $finalHref }}">
                     {{ config('app.name', '志愿汇') }}
                 </a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="{{ __('Toggle navigation') }}">
+                <!-- <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="{{ __('Toggle navigation') }}">
                     <span class="navbar-toggler-icon"></span>
-                </button>
+                </button> -->
 
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <!-- Left Side Of Navbar -->
@@ -105,5 +108,6 @@
             @yield('content')
         </main>
     </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 </body>
 </html>
