@@ -10,9 +10,7 @@ use App\Http\Controllers\ActivityController;
 
 Route::redirect('/', '/login');
 
-Route::get('/profile/export-pdf', function () {
-    return '占位';
-})->name('profile.exportPdf');
+Route::get('/profile/export-pdf', [UserController::class, 'exportPDF'])->name('profile.exportPdf');
 
 
 Route::view('/login', 'auth.login')->name('login'); 

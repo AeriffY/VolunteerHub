@@ -26,7 +26,8 @@ use Illuminate\Notifications\Action;
             return view('activities.show', compact('activity', 'registration', 'canCheckin', 'hasCheckedIn'));
         }
 
-        public function index(Request $request) {
+        public function index(Request $request, Activity $activity) {
+            $activity->updateAllStatus();
             $query = Activity::whereNotIn('status', ['draft', 'cancelled']);
             if($request->filled('search')) {
                 $search = $request->input('search');
@@ -39,9 +40,9 @@ use Illuminate\Notifications\Action;
             $activities = $query->latest()->paginate(10);
             $activities->appends($request->all());
 
-            foreach($activities as $activity){
-                $activity->updateStatus();
-            }
+            // foreach($activities as $activity){
+            //     $activity->updateStatus();
+            // }
 
             return view('activities.index', compact('activities'));
         }

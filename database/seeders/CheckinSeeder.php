@@ -6,20 +6,49 @@ use Illuminate\Database\Seeder;
 use App\Models\Checkin;
 use App\Models\User;
 use App\Models\Activity;
-use Carbon\Carbon; // 引入 Carbon 类
+use Carbon\Carbon;
 
 class CheckinSeeder extends Seeder
 {
     public function run(): void
     {
-        $volunteer = User::where('role', 'volunteer')->first();
-        $activity = Activity::first();
+        $targetId = 3;
+        $volunteer = User::find($targetId);
 
-        Checkin::create([
-            'activity_id' => $activity->id,
-            'user_id' => $volunteer->id,
-            // 手动将时间字符串转换为 Carbon 对象，再减去30分钟
-            'timestamp' => Carbon::parse($activity->time)->subMinutes(30),
-        ]);
+        if (!$volunteer) {
+            $this->command->error("找不到");
+            return;
+        }
+
+        $activities = Activity::all();
+
+        if ($activities->isEmpty()) {
+            $this->command->info('空的');
+            $activities = Activity::factory()->count(20)->create();
+        }
+
+        $count = 0;
+        foreach ($activities as $activity) {
+            
+            $exists = Checkin::where('activity_id', $activity->id)
+                             ->where('user_id', $targetId)
+                             ->exists();
+            
+            if ($exists) {
+                continue;
+            }
+
+            $checkinTime = Carbon::parse($activity->start_time)->addMinutes(rand(-30, 10));
+
+            Checkin::create([
+                'activity_id' => $activity->id,
+                'user_id'     => $targetId,
+                'timestamp'   => $checkinTime,
+            ]);
+
+            $count++;
+        }
+
+        $this->command->info("Success");
     }
 }
