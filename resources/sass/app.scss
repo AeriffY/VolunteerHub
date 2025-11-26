@@ -4,5 +4,282 @@
 // Variables
 @import 'variables';
 
+// ===================================
+// 强制覆盖全局主题色和字体变量 (必须在 Bootstrap 导入前)
+// ===================================
+
+$volunteer-green: #28a745; // 经典的成功绿/志愿绿
+$volunteer-dark-green: #1e7e34; // 较深的绿色
+$green-start: #38c172; // 渐变色起点
+$green-end: #1c984e; // 渐变色终点
+$card-header-color: $volunteer-green; // 卡片头部颜色
+    
+// 覆盖 Bootstrap 默认主色调
+$primary: $volunteer-green; 
+$success: $volunteer-green; 
+
+// 覆盖默认字体：Inter/Quicksand 用于正文和标题
+$font-family-sans-serif: 'Inter', 'Quicksand', sans-serif; 
+
 // Bootstrap
 @import 'bootstrap/scss/bootstrap';
+
+// ===================================
+// 登录/注册页面按钮和卡片头部美化 (保留您原有的样式)
+// ===================================
+
+// 卡片头部样式
+.card-header.bg-primary {
+    background-color: $volunteer-green !important; // 强制覆盖卡片头部的背景色
+    background-image: none !important; // 移除潜在的渐变，确保颜色统一
+    color: white; // 确保文字是白色
+}
+
+// 按钮样式
+.btn-primary {
+    border-radius: 0.75rem; // 更圆润的圆角
+    // 应用与导航栏一致的增强渐变
+    background-image: linear-gradient(to right, $green-start 0%, $green-end 100%);
+    border: none;
+    transition: all 0.3s ease;
+    padding: 0.75rem 1.5rem; // 增加按钮大小
+    font-weight: 600;
+    
+    // ** 【关键修改】确保文字是白色，与渐变背景搭配更柔和 **
+    color: white !important; 
+    
+    // 按钮按下时，添加光泽效果，让其更具活力
+    position: relative;
+    overflow: hidden;
+    &::after {
+        content: '';
+        // ... (光泽效果代码)
+    }
+}
+
+.btn-primary:hover {
+    box-shadow: 0 8px 15px rgba(56, 193, 114, 0.4); 
+    transform: translateY(-2px);
+    &::after {
+        opacity: 1;
+    }
+}
+
+// ===================================
+// 导航栏样式 (已修复渐变色)
+// ===================================
+.volunteer-navbar {
+    // 核心修复：强制使用渐变背景
+    background-color: $volunteer-green !important; // Fallback 纯色
+    background-image: linear-gradient(to right, $green-start 0%, $green-end 100%) !important; // 恢复渐变
+
+    .navbar-brand {
+        font-size: 1.4rem;
+        font-weight: 700;
+        color: white !important; 
+        text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
+    }
+    
+    .nav-link {
+        color: rgba(255, 255, 255, 0.9) !important;
+        transition: color 0.3s ease, transform 0.2s ease;
+    }
+    .nav-link:hover,
+    .nav-item.dropdown .nav-link.dropdown-toggle:hover {
+        color: white !important;
+        transform: translateY(-1px);
+    }
+}
+
+
+// ===================================
+// 探索活动页面专用样式 (已更新为圆润字体)
+// ===================================
+
+/* 标题样式：使用圆润的 Quicksand 字体 */
+.custom-title {
+    font-family: 'Quicksand', 'Inter', sans-serif !important; 
+    
+    letter-spacing: 0.1em; /* 稍微减小字间距，配合圆润字体 */
+    
+    // 强制使用主题绿和 700 字重
+    color: $primary !important; 
+    font-weight: 700 !important; 
+    
+    text-shadow: 1px 1px 6px rgba(40, 167, 69, 0.3); 
+    
+    position: relative;
+    padding-bottom: 1rem !important; 
+}
+
+/* 给标题增加一条主题色的下划线（保持不变） */
+.custom-title::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 60px; 
+    height: 4px; 
+    background-color: $primary;
+    border-radius: 2px;
+}
+
+/* 活动卡片悬停效果（高级美观） */
+.activity-card {
+    display: block; 
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    
+    .card {
+        border: none;
+    }
+    
+    .card-title {
+        transition: color 0.3s ease;
+    }
+    
+    &:hover {
+        transform: translateY(-5px); 
+        box-shadow: 0 15px 30px rgba(40, 167, 69, 0.45) !important; 
+        
+        .card-title {
+            color: var(--bs-primary) !important; 
+        }
+    }
+}
+
+/* 状态 badge 样式修正 */
+.activity-card .badge.bg-light {
+    opacity: 0.9;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+// ... (您的主题色变量 $primary 和其他样式保持不变)
+
+// ===================================
+// 封面闪屏 (Splash Screen) 样式 - 白绿渐变版
+// ===================================
+
+// 鼓励语使用颜色：白色
+$slogan-color: #ffffff; 
+
+// FIX 1: 定义 白到绿 渐变颜色 (从上到下)
+$splash-white-top: #ffffff;      // 顶部纯白色
+$splash-green-bottom: #a3e6b1;   // 底部柔和的浅绿色
+
+#splash-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    
+    // FIX 1: 应用 从白到绿，从上到下的线性渐变
+    // 只需要将颜色顺序对调即可实现方向反转
+    background-image: linear-gradient(to bottom, $splash-white-top 0%, $splash-green-bottom 100%);
+    background-color: $splash-white-top; /* 兼容旧浏览器 */
+    
+    transition: opacity 1.5s ease-out; 
+    opacity: 1; 
+    z-index: 9999; 
+    
+    display: flex;
+    flex-direction: column; 
+    justify-content: center;
+    align-items: center;
+}
+
+// 主标题：保持深绿色
+.splash-text {
+    font-size: 6.5rem; 
+    font-weight: 900;
+    color: $primary; 
+    text-shadow: 3px 3px 10px rgba(0, 0, 0, 0.2); 
+    font-family: 'Quicksand', 'Inter', sans-serif !important; 
+    
+    margin-bottom: 2.5rem; 
+}
+
+// 鼓励语：白色 + 强烈阴影
+.splash-slogan {
+    font-family: 'Inter', sans-serif !important; 
+    font-size: 1.8rem; 
+    font-weight: 500; 
+    
+    color: $slogan-color; // 白色
+    text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.7); 
+    
+    letter-spacing: 0.25em; 
+}// ... (您的主题色变量 $primary 和其他样式保持不变)
+
+// ... (确保 $primary 已定义为深绿色，例如 #28a745)
+
+// ===================================
+// 封面闪屏 (Splash Screen) 样式 - 极简主义设计
+// ===================================
+
+// 颜色定义
+$splash-bg-color: #f0fff4; // 柔和的浅薄荷绿
+$splash-dark-shadow: rgba(0, 0, 0, 0.4); // 用于标语的阴影
+
+#splash-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    
+    // 纯净背景色 + 极浅的渐变，仅提供微弱的深度
+    background: linear-gradient(180deg, $splash-bg-color 0%, lighten($splash-bg-color, 2%) 100%);
+    
+    transition: opacity 1s ease-out; // FIX: 淡出时间改为 1 秒
+    opacity: 1; 
+    z-index: 9999; 
+    
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column; /* 垂直居中 */
+}
+
+/* 集中内容区，用于整体动画（可选） */
+.splash-center-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    // 添加一个整体淡入动画，让内容在加载时平滑出现
+    animation: content-fade-in 1s ease-out; 
+}
+
+/* 主标题 */
+.splash-text {
+    font-size: 6rem; /* 字体略微缩小，配合图标 */
+    font-weight: 900;
+    color: $primary; 
+    text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1); /* 柔和的阴影 */
+    font-family: 'Quicksand', 'Inter', sans-serif !important; 
+    margin-bottom: 1.5rem; /* 调整与标语的间距 */
+    letter-spacing: 0.1em; /* 增加一点字间距 */
+}
+
+/* 鼓励语 */
+.splash-slogan {
+    font-family: 'Inter', sans-serif !important; 
+    font-size: 1.7rem; 
+    font-weight: 500; 
+    color: $primary; // FIX: 标语改为深绿色，确保在浅色背景上极度清晰
+    
+    // 使用柔和的阴影来提升立体感，避免之前突兀的黑影
+    text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.1); 
+    letter-spacing: 0.2em; 
+}
+
+
+// ===================================
+// 动画定义
+// ===================================
+
+/* 内容整体淡入动画 */
+@keyframes content-fade-in {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
