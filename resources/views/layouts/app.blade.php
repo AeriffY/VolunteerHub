@@ -3,25 +3,47 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-
-    <!-- CSRF Token -->
+    
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <title>{{ config('app.name', '志愿汇') }}</title>
 
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
-    <link rel="dns-prefetch" href="//fonts.bunny.net">
-    <link href="https://fonts.bunny.net/css?family=Nunito" rel="stylesheet">
-
-    <!-- Scripts -->
+    
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@700&display=swap" rel="stylesheet">    
+    
     @vite(['resources/sass/app.scss', 'resources/js/app.js'])
 </head>
 <body>
     <div id="app">
-        <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm">
+        <!-- 修改导航栏样式：使用深色文字、主色背景和自定义类 -->
+        <nav class="navbar navbar-expand-md navbar-dark bg-primary shadow-lg volunteer-navbar">
             <div class="container">
-                <a class="navbar-brand" href="{{ route('activities.index') }}">
+                @php
+                    $isLoggedIn = Auth::check();
+                    
+                    // 1. 确定跳转目标路由
+                    $targetRoute = 'activities.index'; // 默认是普通用户主页
+                    
+                    if ($isLoggedIn) {
+                        $userRole = Auth::user()->role ?? ''; 
+                        
+                        // 假设管理员角色是 'admin'，请根据你上一步调试的结果来确认这个值
+                        if ($userRole === 'admin') { 
+                            $targetRoute = 'admin.activities.index';
+                        } else {
+                            $targetRoute = 'activities.index';
+                        }
+                    }
+                    
+                    // 2. 确定最终链接 (href) 的值
+                    // 如果已登录，则使用 route() 生成链接；否则，使用 '#'
+                    $finalHref = $isLoggedIn ? route($targetRoute) : '#';
+                    
+                @endphp
+                
+                <a class="navbar-brand" href="{{ $finalHref }}">
                     {{ config('app.name', '志愿汇') }}
                 </a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="{{ __('Toggle navigation') }}">
@@ -31,7 +53,7 @@
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <!-- Left Side Of Navbar -->
                     <ul class="navbar-nav me-auto">
-
+                        {{-- 可以在这里添加其他导航链接 --}}
                     </ul>
 
                     <!-- Right Side Of Navbar -->
