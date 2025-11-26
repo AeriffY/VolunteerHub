@@ -1,107 +1,285 @@
-@extends('layouts.app')
+// Fonts
+@import url('https://fonts.bunny.net/css?family=Nunito');
 
-@section('title', '个人中心')
+// Variables
+@import 'variables';
 
-@section('content')
-    <div class="container"> {{-- 增加一个容器以居中内容 --}}
+// ===================================
+// 强制覆盖全局主题色和字体变量 (必须在 Bootstrap 导入前)
+// ===================================
+
+$volunteer-green: #28a745; // 经典的成功绿/志愿绿
+$volunteer-dark-green: #1e7e34; // 较深的绿色
+$green-start: #38c172; // 渐变色起点
+$green-end: #1c984e; // 渐变色终点
+$card-header-color: $volunteer-green; // 卡片头部颜色
+    
+// 覆盖 Bootstrap 默认主色调
+$primary: $volunteer-green; 
+$success: $volunteer-green; 
+
+// 覆盖默认字体：Inter/Quicksand 用于正文和标题
+$font-family-sans-serif: 'Inter', 'Quicksand', sans-serif; 
+
+// Bootstrap
+@import 'bootstrap/scss/bootstrap';
+
+// ===================================
+// 登录/注册页面按钮和卡片头部美化 (保留您原有的样式)
+// ===================================
+
+// 卡片头部样式
+.card-header.bg-primary {
+    background-color: $volunteer-green !important; // 强制覆盖卡片头部的背景色
+    background-image: none !important; // 移除潜在的渐变，确保颜色统一
+    color: white; // 确保文字是白色
+}
+
+// 按钮样式
+.btn-primary {
+    border-radius: 0.75rem; // 更圆润的圆角
+    // 应用与导航栏一致的增强渐变
+    background-image: linear-gradient(to right, $green-start 0%, $green-end 100%);
+    border: none;
+    transition: all 0.3s ease;
+    padding: 0.75rem 1.5rem; // 增加按钮大小
+    font-weight: 600;
+    
+    // ** 【关键修改】确保文字是白色，与渐变背景搭配更柔和 **
+    color: white !important; 
+    
+    // 按钮按下时，添加光泽效果，让其更具活力
+    position: relative;
+    overflow: hidden;
+    &::after {
+        content: '';
+        // ... (光泽效果代码)
+    }
+}
+
+.btn-primary:hover {
+    box-shadow: 0 8px 15px rgba(56, 193, 114, 0.4); 
+    transform: translateY(-2px);
+    &::after {
+        opacity: 1;
+    }
+}
+
+// ===================================
+// 导航栏样式 (已修复渐变色)
+// ===================================
+.volunteer-navbar {
+    // 核心修复：强制使用渐变背景
+    background-color: $volunteer-green !important; // Fallback 纯色
+    background-image: linear-gradient(to right, $green-start 0%, $green-end 100%) !important; // 恢复渐变
+
+    .navbar-brand {
+        font-size: 1.4rem;
+        font-weight: 700;
+        color: white !important; 
+        text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
+    }
+    
+    .nav-link {
+        color: rgba(255, 255, 255, 0.9) !important;
+        transition: color 0.3s ease, transform 0.2s ease;
+    }
+    .nav-link:hover,
+    .nav-item.dropdown .nav-link.dropdown-toggle:hover {
+        color: white !important;
+        transform: translateY(-1px);
+    }
+}
+
+
+// ===================================
+// 探索活动页面专用样式 (已更新为圆润字体)
+// ===================================
+
+/* 标题样式：使用圆润的 Quicksand 字体 */
+.custom-title {
+    font-family: 'Quicksand', 'Inter', sans-serif !important; 
+    
+    letter-spacing: 0.1em; /* 稍微减小字间距，配合圆润字体 */
+    
+    // 强制使用主题绿和 700 字重
+    color: $primary !important; 
+    font-weight: 700 !important; 
+    
+    text-shadow: 1px 1px 6px rgba(40, 167, 69, 0.3); 
+    
+    position: relative;
+    padding-bottom: 1rem !important; 
+}
+
+/* 给标题增加一条主题色的下划线（保持不变） */
+.custom-title::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 60px; 
+    height: 4px; 
+    background-color: $primary;
+    border-radius: 2px;
+}
+
+/* 活动卡片悬停效果（高级美观） */
+.activity-card {
+    display: block; 
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    
+    .card {
+        border: none;
+    }
+    
+    .card-title {
+        transition: color 0.3s ease;
+    }
+    
+    &:hover {
+        transform: translateY(-5px); 
+        box-shadow: 0 15px 30px rgba(40, 167, 69, 0.45) !important; 
         
-        <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-2">
-            <h1><i class="bi bi-person-circle me-2 text-success"></i>个人中心</h1>
-            <a href="{{ route('profile.exportPdf') }}" class="btn btn-outline-danger">
-                <i class="bi bi-file-earmark-pdf-fill me-1"></i> 导出时长PDF
-            </a>
-        </div>
-    
-        <div class="row">
-            {{-- 累计志愿服务时长卡片 --}}
-            <div class="col-md-6 mb-4">
-                {{-- 使用 bg-primary 样式，它会被 app.scss 中的 .card-header.bg-primary 覆盖为主题绿 --}}
-                <div class="card h-100 shadow-sm border-0 activity-card">
-                    <div class="card-header bg-primary text-white fw-bold">
-                        <i class="bi bi-clock-history me-1"></i> 累计志愿服务时长
-                    </div>
-                    <div class="card-body text-center py-5">
-                        <p class="display-3 fw-bolder text-success mb-0">
-                            {{ number_format((float)($hours->total_hours ?? 0), 2) }}
-                        </p>
-                        <p class="fs-5 text-muted mb-0">小时</p>
-                    </div>
-                </div>
-            </div>
-            
-            {{-- 我的勋章卡片 --}}
-            <div class="col-md-6 mb-4">
-                <div class="card h-100 shadow-sm border-0 activity-card">
-                    <div class="card-header bg-primary text-white fw-bold">
-                        <i class="bi bi-award me-1"></i> 我的勋章
-                    </div>
-                    <div class="card-body text-center d-flex flex-column justify-content-center align-items-center">
-                        
-                        @php
-                            $totalHours = (float)($hours->total_hours ?? 0);
-                            $isExcellentVolunteer = $totalHours >= 10.0;
-                        @endphp
-    
-                        @if ($isExcellentVolunteer)
-                            <div class="py-3">
-                                <img src="{{ asset('images/medal.png') }}" 
-                                     alt="优秀志愿者勋章" 
-                                     class="img-fluid mb-3 shadow-lg" 
-                                     style="width: 100px; height: 100px; border: 4px solid #38c172; border-radius: 50%;">
-                                <h4 class="fw-bolder text-success mb-1">🏅 优秀志愿者</h4>
-                                <p class="text-muted small mb-0">已达成 10 小时服务标准！</p>
-                            </div>
-                        @else
-                            <div class="text-center p-3">
-                                <i class="bi bi-award-fill text-secondary opacity-50 mb-3" style="font-size: 4rem;"></i>
-                                <h5 class="text-muted mb-2">解锁优秀志愿者勋章</h5>
-                                <p class="text-secondary small mb-1">
-                                    累计服务时长达到 10.00 小时可解锁此勋章。
-                                </p>
-                                <p class="fw-bold mb-0 text-primary">
-                                    当前进度: {{ number_format($totalHours, 2) }} / 10.00 小时
-                                </p>
-                            </div>
-                        @endif
-                    </div>
-                </div>
-            </div>
-        </div>
-    
-        <h3 class="mt-4 mb-3 border-bottom pb-2">
-            <i class="bi bi-list-columns-reverse me-1 text-primary"></i> 我的活动记录
-        </h3>
-        
-        <div class="list-group shadow-sm">
-            {{-- 
-                控制器应传入 $registrations (包含 activity 关联)
-                查询 'registrations' 表中 'user_id' 为当前用户的记录
-            --}}
-            @forelse($registrations as $reg)
-                @php
-                    $isRegistered = $reg->status == 'registered';
-                    $statusClass = $isRegistered ? 'success' : 'secondary';
-                    $statusText = $isRegistered ? '已报名' : '已取消';
-                    $iconClass = $isRegistered ? 'bi-check-circle-fill' : 'bi-x-circle-fill';
-                @endphp
-                <a href="{{ route('activities.show', $reg->activity->id) }}" class="list-group-item list-group-item-action py-3">
-                    <div class="d-flex w-100 justify-content-between align-items-center">
-                        <h5 class="mb-1 fw-bold text-dark">{{ $reg->activity->title }}</h5>
-                        <span class="badge bg-{{ $statusClass }} py-2 px-3 fw-normal">
-                            <i class="bi {{ $iconClass }} me-1"></i> {{ $statusText }}
-                        </span>
-                    </div>
-                    <p class="mb-1 text-muted small">
-                        <i class="bi bi-calendar-event me-1"></i> 活动日期: 
-                        <span class="fw-semibold text-dark">{{ $reg->activity->start_time->format('Y年m月d日') }}</span>
-                    </p>
-                </a>
-            @empty
-                <div class="alert alert-info mb-0 text-center">
-                    <i class="bi bi-info-circle me-1"></i> 您还没有报名任何活动。快去发现新活动吧！
-                </div>
-            @endforelse
-        </div>
+        .card-title {
+            color: var(--bs-primary) !important; 
+        }
+    }
+}
 
-    </div> {{-- /container --}}
-@endsection
+/* 状态 badge 样式修正 */
+.activity-card .badge.bg-light {
+    opacity: 0.9;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+// ... (您的主题色变量 $primary 和其他样式保持不变)
+
+// ===================================
+// 封面闪屏 (Splash Screen) 样式 - 白绿渐变版
+// ===================================
+
+// 鼓励语使用颜色：白色
+$slogan-color: #ffffff; 
+
+// FIX 1: 定义 白到绿 渐变颜色 (从上到下)
+$splash-white-top: #ffffff;      // 顶部纯白色
+$splash-green-bottom: #a3e6b1;   // 底部柔和的浅绿色
+
+#splash-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    
+    // FIX 1: 应用 从白到绿，从上到下的线性渐变
+    // 只需要将颜色顺序对调即可实现方向反转
+    background-image: linear-gradient(to bottom, $splash-white-top 0%, $splash-green-bottom 100%);
+    background-color: $splash-white-top; /* 兼容旧浏览器 */
+    
+    transition: opacity 1.5s ease-out; 
+    opacity: 1; 
+    z-index: 9999; 
+    
+    display: flex;
+    flex-direction: column; 
+    justify-content: center;
+    align-items: center;
+}
+
+// 主标题：保持深绿色
+.splash-text {
+    font-size: 6.5rem; 
+    font-weight: 900;
+    color: $primary; 
+    text-shadow: 3px 3px 10px rgba(0, 0, 0, 0.2); 
+    font-family: 'Quicksand', 'Inter', sans-serif !important; 
+    
+    margin-bottom: 2.5rem; 
+}
+
+// 鼓励语：白色 + 强烈阴影
+.splash-slogan {
+    font-family: 'Inter', sans-serif !important; 
+    font-size: 1.8rem; 
+    font-weight: 500; 
+    
+    color: $slogan-color; // 白色
+    text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.7); 
+    
+    letter-spacing: 0.25em; 
+}// ... (您的主题色变量 $primary 和其他样式保持不变)
+
+// ... (确保 $primary 已定义为深绿色，例如 #28a745)
+
+// ===================================
+// 封面闪屏 (Splash Screen) 样式 - 极简主义设计
+// ===================================
+
+// 颜色定义
+$splash-bg-color: #f0fff4; // 柔和的浅薄荷绿
+$splash-dark-shadow: rgba(0, 0, 0, 0.4); // 用于标语的阴影
+
+#splash-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    
+    // 纯净背景色 + 极浅的渐变，仅提供微弱的深度
+    background: linear-gradient(180deg, $splash-bg-color 0%, lighten($splash-bg-color, 2%) 100%);
+    
+    transition: opacity 1s ease-out; // FIX: 淡出时间改为 1 秒
+    opacity: 1; 
+    z-index: 9999; 
+    
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column; /* 垂直居中 */
+}
+
+/* 集中内容区，用于整体动画（可选） */
+.splash-center-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    // 添加一个整体淡入动画，让内容在加载时平滑出现
+    animation: content-fade-in 1s ease-out; 
+}
+
+/* 主标题 */
+.splash-text {
+    font-size: 6rem; /* 字体略微缩小，配合图标 */
+    font-weight: 900;
+    color: $primary; 
+    text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1); /* 柔和的阴影 */
+    font-family: 'Quicksand', 'Inter', sans-serif !important; 
+    margin-bottom: 1.5rem; /* 调整与标语的间距 */
+    letter-spacing: 0.1em; /* 增加一点字间距 */
+}
+
+/* 鼓励语 */
+.splash-slogan {
+    font-family: 'Inter', sans-serif !important; 
+    font-size: 1.7rem; 
+    font-weight: 500; 
+    color: $primary; // FIX: 标语改为深绿色，确保在浅色背景上极度清晰
+    
+    // 使用柔和的阴影来提升立体感，避免之前突兀的黑影
+    text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.1); 
+    letter-spacing: 0.2em; 
+}
+
+
+// ===================================
+// 动画定义
+// ===================================
+
+/* 内容整体淡入动画 */
+@keyframes content-fade-in {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
