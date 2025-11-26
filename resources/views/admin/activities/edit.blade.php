@@ -3,6 +3,9 @@
 @section('title', '编辑活动')
 
 @section('content')
+    <a href="{{ route('admin.activities.index') }}" class="text-decoration-none d-inline-flex align-items-center mb-4 text-primary fw-bold fs-4 py-1">
+        <i class="bi bi-arrow-left me-2"></i> {{'返回活动管理'}}
+    </a>
     <h1 class="fw-bold custom-title mb-4">
         <i class="bi bi-pencil-square me-2"></i> 编辑活动: {{ $activity->title }}
     </h1>
