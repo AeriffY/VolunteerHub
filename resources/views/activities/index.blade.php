@@ -24,46 +24,52 @@
             @foreach($activities as $activity)
                 <div class="col">
                     {{-- 卡片容器：使用自定义的 .activity-card 类来添加悬停效果 --}}
-                    <a href="{{ route('activities.show', $activity->id) }}" class="activity-card d-block text-decoration-none h-100">
-                        <div class="card shadow border-0 h-100 rounded-4 overflow-hidden">
+                    <div class="card activity-card shadow border-0 h-100 rounded-4 overflow-hidden d-flex flex-column">
                             
-                            {{-- 状态标签和时间信息 (顶部条) --}}
-                            <div class="p-3 d-flex justify-content-between align-items-center text-white" 
-                                 style="background-color: #38c172;">
-                                 
-                                @php
-                                    // 沿用精简配色逻辑
-                                    $status = $activity->status ?? 'draft';
-                                    $statusMap = [
-                                        'published' => ['bg-success', '报名中'],
-                                        'in_progress' => ['bg-info', '进行中'],
-                                        'completed' => ['bg-secondary', '已结束'],
-                                        'cancelled' => ['bg-danger', '已取消'],
-                                        'draft' => ['bg-warning', '待发布'],
-                                    ];
-                                    $badgeClass = $statusMap[$status][0] ?? 'bg-secondary';
-                                    $badgeText = $statusMap[$status][1] ?? '未知';
-                                @endphp
-                                <span class="badge {{ $badgeClass }} fs-7">{{ $badgeText }}</span>
-                                <small class="fw-bold"><i class="bi bi-clock me-1"></i> 开始时间：{{ $activity->start_time->diffForHumans() }} </small>
-                            </div>
+                        {{-- 状态标签和时间信息 (顶部条) --}}
+                        <div class="p-3 d-flex justify-content-between align-items-center text-white" 
+                                style="background-color: #38c172;">
+                                
+                            @php
+                                // 沿用精简配色逻辑
+                                $status = $activity->status ?? 'draft';
+                                $statusMap = [
+                                    'published' => ['bg-success', '报名中'],
+                                    'in_progress' => ['bg-info', '进行中'],
+                                    'completed' => ['bg-secondary', '已结束'],
+                                    'cancelled' => ['bg-danger', '已取消'],
+                                    'draft' => ['bg-warning', '待发布'],
+                                ];
+                                $badgeClass = $statusMap[$status][0] ?? 'bg-secondary';
+                                $badgeText = $statusMap[$status][1] ?? '未知';
+                            @endphp
+                            <span class="badge {{ $badgeClass }} fs-7">{{ $badgeText }}</span>
+                            <small class="fw-bold"><i class="bi bi-clock me-1"></i> 开始时间：{{ $activity->start_time->diffForHumans() }} </small>
+                        </div>
 
-                            <div class="card-body p-4">
-                                {{-- 标题 --}}
-                                <h5 class="card-title fw-bold text-dark mb-2">{{ $activity->title }}</h5>
-                                
-                                {{-- 摘要 --}}
-                                <p class="card-text text-muted mb-3">{{ Str::limit($activity->description, 70) }}</p>
-                                
-                                {{-- 关键信息列表 --}}
-                                <div class="list-unstyled small fw-semibold">
-                                    <p class="mb-1 text-info"><i class="bi bi-geo-alt-fill me-2"></i> {{ $activity->location }}</p>
-                                    <p class="mb-1 text-secondary"><i class="bi bi-calendar-event me-2"></i> {{ $activity->start_time->format('m-d H:i') }}</p>
-                                    <p class="mb-0 text-success"><i class="bi bi-people-fill me-2"></i> 报名人数：{{ $activity->registrations->count() }} / {{ $activity->capacity }}</p>
-                                </div>
+                        <div class="card-body p-4">
+                            {{-- 标题 --}}
+                            <h5 class="card-title fw-bold text-dark mb-2">{{ $activity->title }}</h5>
+                            
+                            {{-- 摘要 --}}
+                            <p class="card-text text-muted mb-3">{{ Str::limit($activity->description, 70) }}</p>
+                            
+                            {{-- 关键信息列表 --}}
+                            <div class="list-unstyled small fw-semibold">
+                                <p class="mb-1 text-info"><i class="bi bi-geo-alt-fill me-2"></i> {{ $activity->location }}</p>
+                                <p class="mb-1 text-secondary"><i class="bi bi-calendar-event me-2"></i> {{ $activity->start_time->format('m-d H:i') }}</p>
+                                <p class="mb-0 text-success"><i class="bi bi-people-fill me-2"></i> 报名人数：{{ $activity->registrations->count() }} / {{ $activity->capacity }}</p>
                             </div>
                         </div>
-                    </a>
+                        <div class="card-footer bg-light border-0 p-4 pt-0">
+                            <div class="d-flex flex-wrap gap-2">
+                                {{-- 查看详情 --}}
+                                <a href="{{ route('activities.show', $activity->id) }}" class="btn btn-sm btn-outline-primary">
+                                    <i class="bi bi-eye"></i> 查看
+                                </a>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             @endforeach
         </div>

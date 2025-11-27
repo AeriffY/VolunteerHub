@@ -3,7 +3,10 @@
 @section('title', '活动签到')
 
 @section('content')
-    <div class="container mt-5">
+    <div class="container mt-4">
+        <a href="{{ route('admin.activities.index') }}" class="text-decoration-none d-inline-flex align-items-center mb-4 text-primary fw-bold fs-4 py-1">
+            <i class="bi bi-arrow-left me-2"></i> {{'返回活动广场'}}
+        </a>
         <div class="row justify-content-center">
             <div class="col-md-6">
                 <div class="card shadow-sm">
@@ -25,21 +28,21 @@
                             
                             <div class="mb-4">
                                 <label for="checkin_code" class="form-label visually-hidden">签到码</label>
-                                <input type="tel" {{-- 改进：改为 tel，在移动设备上弹出数字键盘 --}}
-                                       class="form-control form-control-lg text-center fw-bold @error('checkin_code') is-invalid @enderror" 
-                                       id="checkin_code" 
-                                       name="checkin_code" 
-                                       value="{{ old('checkin_code') }}" {{-- 保持旧值 --}}
-                                       placeholder="请输入6位数字签到码" 
-                                       maxlength="6"
-                                       pattern="\d{6}" {{-- 改进：明确要求输入6个数字 --}}
-                                       required
-                                       autocomplete="off"> {{-- 阻止浏览器自动填充，保证输入新鲜度 --}}
+                                <input type="text" {{-- 修正：改为 text，支持字母和数字 --}}
+                                    class="form-control form-control-lg text-center fw-bold @error('checkin_code') is-invalid @enderror" 
+                                    id="checkin_code" 
+                                    name="checkin_code" 
+                                    value="{{ old('checkin_code') }}" 
+                                    placeholder="请输入6位签到码" 
+                                    maxlength="6"
+                                    pattern="[A-Za-z0-9]{6}" {{-- 修正：匹配大写字母、小写字母和数字，共6位 --}}
+                                    required
+                                    autocomplete="off">
                                 
                                 @error('checkin_code')
                                     <div class="invalid-feedback text-center mt-2">
                                         {{ $message }}
-                                        <div class="small text-danger"></div> {{-- 将提示信息稍微弱化并居中 --}}
+                                        <div class="small text-danger"></div>
                                     </div>
                                 @enderror
                             </div>
@@ -53,5 +56,4 @@
             </div>
         </div>
     </div>
-
 @endsection

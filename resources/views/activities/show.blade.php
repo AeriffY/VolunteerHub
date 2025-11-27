@@ -4,6 +4,25 @@
 
 @section('content')
     <div class="mb-4">
+        @php
+            $isLoggedIn = Auth::check();
+            $returnMessage='';
+            $targetRoute = 'activities.index'; // 默认是普通用户主页
+            if ($isLoggedIn) {
+                $userRole = Auth::user()->role ?? ''; 
+                if ($userRole === 'admin') { 
+                    $targetRoute = 'admin.activities.index';
+                    $returnMessage='返回活动管理';
+                } else {
+                    $targetRoute = 'activities.index';
+                    $returnMessage='返回活动广场';
+                }
+            }
+            $finalHref = $isLoggedIn ? route($targetRoute) : '#';
+        @endphp
+        <a href="{{ $finalHref }}" class="text-decoration-none d-inline-flex align-items-center mb-4 text-primary fw-bold fs-4 py-1">
+            <i class="bi bi-arrow-left me-2"></i> {{$returnMessage}}
+        </a>
         @if (session('success'))
             <div class="alert alert-success alert-dismissible fade show" role="alert">
                 <i class="bi bi-check-circle-fill me-2"></i> {{ session('success') }}
@@ -106,7 +125,7 @@
 
                             @if($registration->status == 'registered' && $status != 'completed' && $status != 'cancelled')
                                 {{-- 取消报名按钮使用 danger --}}
-                                <form action="{{ route('registrations.destroy', $registration->id) }}" method="POST" onsubmit="return confirm('确定要取消报名吗？此操作不可撤销。');">
+                                <form action="{{ route('registrations.destroy', $registration->id) }}" method="POST">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="btn btn-danger w-100 btn-lg shadow">

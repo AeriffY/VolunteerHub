@@ -4,7 +4,25 @@
 
 @section('content')
     <div class="container"> {{-- 增加一个容器以居中内容 --}}
-        
+        @php
+            $isLoggedIn = Auth::check();
+            $returnMessage='';
+            $targetRoute = 'activities.index'; // 默认是普通用户主页
+            if ($isLoggedIn) {
+                $userRole = Auth::user()->role ?? ''; 
+                if ($userRole === 'admin') { 
+                    $targetRoute = 'admin.activities.index';
+                    $returnMessage='返回活动管理';
+                } else {
+                    $targetRoute = 'activities.index';
+                    $returnMessage='返回活动广场';
+                }
+            }
+            $finalHref = $isLoggedIn ? route($targetRoute) : '#';
+        @endphp
+        <a href="{{ $finalHref }}" class="text-decoration-none d-inline-flex align-items-center mb-4 text-primary fw-bold fs-4 py-1">
+            <i class="bi bi-arrow-left me-2"></i> {{$returnMessage}}
+        </a>
         <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-2">
             <h1><i class="bi bi-person-circle me-2 text-success"></i>个人中心</h1>
             <a href="{{ route('profile.exportPdf') }}" class="btn btn-outline-danger">
