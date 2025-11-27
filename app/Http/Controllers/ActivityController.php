@@ -37,7 +37,7 @@ use Illuminate\Notifications\Action;
                 });
             }
 
-            $activities = $query->latest()->paginate(10);
+            $activities = $query->latest()->paginate(9);
             $activities->appends($request->all());
 
             // foreach($activities as $activity){
