@@ -60,36 +60,66 @@
             <div class="col-md-6 mb-4">
                 <div class="card h-100 shadow-sm border-0 activity-card">
                     <div class="card-header bg-primary text-white fw-bold">
-                        <i class="bi bi-award me-1"></i> 我的勋章
+                        <i class="bi bi-award me-1"></i> 我的志愿者等级
                     </div>
                     <div class="card-body text-center d-flex flex-column justify-content-center align-items-center">
-                        
                         @php
                             $totalHours = (float)($hours->total_hours ?? 0);
-                            $isExcellentVolunteer = $totalHours >= 10.0;
+                            // 定义五级等级规则（纯勋章/星星体系，无奖杯）
+                            $levels = [
+                                ['name' => '初心志愿者', 'threshold' => 0, 'next_threshold' => 5, 'icon' => 'bi-star', 'color' => '#6c757d'],
+                                ['name' => '成长志愿者', 'threshold' => 5, 'next_threshold' => 20, 'icon' => 'bi-star-half', 'color' => '#198754'],
+                                ['name' => '星光志愿者', 'threshold' => 20, 'next_threshold' => 50, 'icon' => 'bi-star-fill', 'color' => '#0d6efd'],
+                                ['name' => '先锋志愿者', 'threshold' => 50, 'next_threshold' => 100, 'icon' => 'bi-award', 'color' => '#6f42c1'],
+                                ['name' => '领航志愿者', 'threshold' => 100, 'next_threshold' => null, 'icon' => 'bi-award-fill', 'color' => '#ffc107'],
+                            ];
+
+                            // 匹配当前等级
+                            $currentLevel = $levels[0]; // 默认初心志愿者
+                            foreach ($levels as $level) {
+                                if ($totalHours >= $level['threshold']) {
+                                    $currentLevel = $level;
+                                }
+                            }
+                            // 判断是否为最高等级
+                            $isHighestLevel = $currentLevel['name'] === '领航志愿者';
+                            // 计算下一级进度（非最高级时）
+                            $nextThreshold = $currentLevel['next_threshold'];
+                            $progress = !$isHighestLevel ? ($totalHours) / ($nextThreshold) * 100 : 100;
+                            $progress = min($progress, 100); // 进度不超过100%
+                            
+                            // 找到下一级名称（非最高级时）
+                            $nextLevelName = '';
+                            if (!$isHighestLevel) {
+                                $currentIndex = array_search($currentLevel, $levels);
+                                $nextLevelName = $levels[$currentIndex + 1]['name'];
+                            }
                         @endphp
-    
-                        @if ($isExcellentVolunteer)
-                            <div class="py-3">
-                                <img src="{{ asset('images/medal.png') }}" 
-                                     alt="优秀志愿者勋章" 
-                                     class="img-fluid mb-3 shadow-lg" 
-                                     style="width: 100px; height: 100px; border: 4px solid #38c172; border-radius: 50%;">
-                                <h4 class="fw-bolder text-success mb-1">🏅 优秀志愿者</h4>
-                                <p class="text-muted small mb-0">已达成 10 小时服务标准！</p>
-                            </div>
-                        @else
-                            <div class="text-center p-3">
-                                <i class="bi bi-award-fill text-secondary opacity-50 mb-3" style="font-size: 4rem;"></i>
-                                <h5 class="text-muted mb-2">解锁优秀志愿者勋章</h5>
-                                <p class="text-secondary small mb-1">
-                                    累计服务时长达到 10.00 小时可解锁此勋章。
+
+                        {{-- 当前等级展示 --}}
+                        <div class="py-3">
+                            {{-- 等级图标（纯勋章/星星系，无奖杯） --}}
+                            <i class="bi {{ $currentLevel['icon'] }} mb-3" style="font-size: 4rem; color: {{ $currentLevel['color'] }};"></i>
+                            <h4 class="fw-bolder mb-1" style="color: {{ $currentLevel['color'] }};">🏅 {{ $currentLevel['name'] }}</h4>
+                            
+                            {{-- 等级说明+进度（非最高级） --}}
+                            @if (!$isHighestLevel)
+                                <p class="text-muted small mb-1">
+                                    累计服务时长达到 {{ $nextThreshold }}.00 小时可解锁「{{ $nextLevelName }}」
                                 </p>
+                                <div class="w-75 mx-auto mb-2">
+                                    <div class="progress" style="height: 8px;">
+                                        <div class="progress-bar" role="progressbar" style="width: {{ $progress }}%; background-color: {{ $currentLevel['color'] }};" aria-valuenow="{{ $progress }}" aria-valuemin="0" aria-valuemax="100"></div>
+                                    </div>
+                                </div>
                                 <p class="fw-bold mb-0 text-primary">
-                                    当前进度: {{ number_format($totalHours, 2) }} / 10.00 小时
+                                    当前进度: {{ number_format($totalHours, 2) }} / {{ $nextThreshold }}.00 小时
                                 </p>
-                            </div>
-                        @endif
+                            @else
+                                {{-- 最高等级提示（勋章表述） --}}
+                                <p class="text-muted small mb-0">🎉 已达成最高志愿者勋章等级，感谢您的无私奉献！</p>
+                            @endif
+                        </div>
                     </div>
                 </div>
             </div>
@@ -106,11 +136,17 @@
             --}}
             @forelse($registrations as $reg)
     @php
-        $isRegistered = $reg->status == 'registered';
-        $statusClass = $isRegistered ? 'success' : 'secondary';
-        $statusText = $isRegistered ? '已报名' : '已取消';
-        $iconClass = $isRegistered ? 'bi-check-circle-fill' : 'bi-x-circle-fill';
-        
+        // 沿用精简配色逻辑
+            $status = $reg->activity->status ?? 'draft';
+            $statusMap = [
+                'published' => ['bg-success', '报名中'],
+                'in_progress' => ['bg-info', '进行中'],
+                'completed' => ['bg-secondary', '已结束'],
+                'cancelled' => ['bg-danger', '已取消'],
+                'draft' => ['bg-warning', '待发布'],
+            ];
+            $badgeClass = $statusMap[$status][0] ?? 'bg-secondary';
+            $badgeText = $statusMap[$status][1] ?? '未知';
         // 假设只有已完成/已签到的活动才允许上传回顾
         $canUploadReview = $reg->activity->status === 'completed'; 
     @endphp
@@ -127,10 +163,7 @@
                     <span class="fw-semibold text-dark">{{ $reg->activity->start_time->format('Y年m月d日') }}</span>
                 </p>
             </div>
-            
-            <span class="badge bg-{{ $statusClass }} py-2 px-3 fw-normal flex-shrink-0 ms-3">
-                <i class="bi {{ $iconClass }} me-1"></i> {{ $statusText }}
-            </span>
+            <span class="badge {{ $badgeClass }} fs-7">{{ $badgeText }}</span>
         </div>
         
         {{-- 新增：按钮功能区域 --}}
