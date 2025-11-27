@@ -6,7 +6,7 @@ use App\Http\Controllers\RegistrationController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\CheckinController;
 use App\Http\Controllers\ActivityController;
-
+use App\Http\Controllers\ReviewController;
 
 Route::redirect('/', '/login');
 
@@ -29,7 +29,11 @@ Route::middleware('auth')->group(function () {
     Route::get('/checkin/{activity}/create', [CheckinController::class, 'gotoCheckin'])->name('checkin.create');
     Route::post('/checkin/{activity}', [CheckinController::class, 'storeCheckin'])->name('checkin.store');
 
-    Route::get('/activities/{activity}', [ActivityController::class, 'show'])->name('activities.show');
+    Route::get('/profile/{activity}', [ActivityController::class, 'show'])->name('activities.show');
+    
+    Route::get('/profile/{activity}/create', [ReviewController::class, 'create'])->name('activities.review.create');
+    Route::post('/activities/{activity}/reviews', [ReviewController::class, 'store'])->name('activities.review.store');
+    Route::get('/reviews/{review}',[ReviewController::class, 'show'])->name('reviews.show');
 });
 
 Route::middleware(['auth', 'is_admin'])->group(function(){

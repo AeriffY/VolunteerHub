@@ -62,4 +62,8 @@ class Activity extends Model
         static::where('status', 'published')->where('start_time', '<=', $now)->update(['status'=>'in_progress']);
         static::where('status', 'in_progress')->where('end_time', '<=', $now)->update(['status'=>'completed']);
     }
+
+    public function reviews() {
+        return $this->hasMany(Review::class);
+    }
 }
