@@ -101,7 +101,7 @@
                     ->orWhere('location', 'like', "%{$search}%");
                 });
             }
-            $activities = $query->paginate(10);
+            $activities = $query->paginate(9);
             $activities->appends($request->all());
             return view('admin.activities.index', compact('activities'));
         }
