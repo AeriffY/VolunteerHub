@@ -43,6 +43,7 @@ Route::middleware(['auth', 'is_admin'])->group(function(){
     Route::delete('/admin/activities/{activity}', [AdminController::class, 'cancelActivity'])->name('admin.activities.destroy');
     Route::get('/admin/activities', [AdminController::class, 'index'])->name('admin.activities.index');
     Route::get('/admin/activities/create', [AdminController::class, 'createActivityPage'])->name('admin.activities.create');
+    Route::post('/admin/activities/{activity}/notify', [AdminController::class, 'sendNotification'])->name('admin.activities.notify');
 });
 
 

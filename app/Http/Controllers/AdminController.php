@@ -3,6 +3,10 @@
     namespace App\Http\Controllers;
     use App\Models\Activity;
     use Illuminate\Http\Request;
+    use Illuminate\Support\Facades\Notification;
+    use App\Notifications\ActivityNotification;
+    use App\Models\Registration;
+    use Illuminate\Support\Facades\Log;
 
     class AdminController extends Controller {
         public function storeActivity(Request $request){
@@ -42,7 +46,7 @@
                 'end_time' => 'sometimes|date',
                 'capacity' => 'sometimes|integer|min:1',
                 //in_progress,completed状态由系统自动更新
-                'status' => 'sometimes|in:published,cancelled,draft' 
+                'status' => 'sometimes|in:published,cancelled,draft,in_progress' 
             ]);
 
             if(isset($validated['capacity'])) {
@@ -56,21 +60,32 @@
 
             // 已开始的活动不能修改 start_time
             if (isset($validated['start_time']) && $activity->status === 'in_progress') {
-                $msg = "活动已开始，无法修改开始时间。";
-                return back()->withErrors(['start_time'=> $msg])->withInput();
+                $new = strtotime($validated['start_time']);
+                $old = $activity->start_time->timestamp;
+                if($new !== $old) {
+                    $msg = "活动已开始，无法修改开始时间。";
+                    return back()->withErrors(['start_time'=> $msg])->withInput();
+                }   
             }
 
             $newStart = isset($validated['start_time']) ? strtotime($validated['start_time']) : $activity->start_time->timestamp;
             $newEnd = isset($validated['end_time']) ? strtotime($validated['end_time']) : $activity->end_time->timestamp;
             if($newStart>=$newEnd) {
+
                 $msg = "开始时间不能晚于结束时间。";
                 return back()->withErrors(['end_time' => $msg, 'start_time' => " "])->withInput();
             }
 
             $activity->update($validated);
+            
+            if($activity->wasChanged(['location', 'start_time', 'end_time'])) {
+                $subject = "【重要】活动信息变更通知";
+            $content = "您报名的活动《{$activity->title}》的时间或地点发生了变更。请务必登录系统查看最新安排。";
+                $this->notifyParticipants($activity, $subject, $content);
+            }
 
             $activity->updateStatus();
-
+            
             return redirect()->route('admin.activities.index');
         }
 
@@ -109,4 +124,26 @@
         public function createActivityPage(Request $request){
             return view('admin.activities.create');
         }
+        
+    private function notifyParticipants(Activity $activity, string $subject, string $content)
+    {
+        $registrations = $activity->registrations()
+            ->with('user')
+            ->whereIn('status', ['registered', 'checked_in']) 
+            ->get();
+
+        if($registrations->isEmpty()) {
+            return;
+        }
+
+        $users = $registrations->map(function ($reg) {
+            return $reg->user;
+        });
+
+        try {
+            Notification::send($users, new ActivityNotification($activity, $subject, $content));
+        } catch (\Exception $e) {
+            Log::error('邮件发送失败: ' . $e->getMessage());
+        }
+    }
     }
