@@ -62,8 +62,6 @@
     <select class="form-select shadow-sm rounded-3" id="status" name="status">
         <option value="draft" @selected(old('status', $activity->status ?? 'draft') == 'draft')>草稿 (Draft)</option>
         <option value="published" @selected(old('status', $activity->status ?? '') == 'published')>发布 (Published)</option>
-        <option value="in_progress" @selected(old('status', $activity->status ?? '') == 'in_progress')>进行中 (In Progress)</option>
-        <option value="completed" @selected(old('status', $activity->status ?? '') == 'completed')>已完成 (Completed)</option>
         <option value="cancelled" @selected(old('status', $activity->status ?? '') == 'cancelled')>已取消 (Cancelled)</option>
     </select>
     @error('status')<div class="text-danger small">{{ $message }}</div>@enderror
@@ -74,3 +72,4 @@
         <i class="bi bi-send-fill me-2"></i> {{ $submitButtonText }}
     </button>
 </div>
+
