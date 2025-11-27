@@ -2,10 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Hours;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use App\Models\Registration;
+use App\Models\Checkin;
+
+//Run: composer require barryvdh/laravel-dompdf
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class UserController extends Controller
 {
@@ -65,5 +70,25 @@ class UserController extends Controller
         $registrations = Registration::with('activity')->where('user_id', $user->id)->orderBy('created_at', 'desc')->get();
         $hours = $user->hours;
         return view('profile.show', compact('user', 'registrations', 'hours'));
+    }
+
+    public function exportPDF(Request $request)
+    {
+        $user = $request->user();
+
+        $CheckedActivity = Checkin::where('user_id', $user->id)->pluck('activity_id');
+        $completedRegistrations = Registration::with('activity')->where('user_id', $user->id)
+        ->whereIn('activity_id', $CheckedActivity)->orderBy('created_at', 'desc')->get();
+
+        $totalHours = Hours::where('user_id', $user->id)->value('total_hours');
+
+        $pdf = Pdf::loadView('pdf.Certificate', [
+            'user' => $user,
+            'registrations' => $completedRegistrations,
+            'totalHours' => $totalHours,
+            'date' => now()->format('Y-m-d'),
+        ]);
+
+        return $pdf->download("志愿服务证明_{$user->name}.pdf");
     }
 }

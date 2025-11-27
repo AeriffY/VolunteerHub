@@ -12,7 +12,7 @@
                 'title'=>'required|string',
                 'description'=>'required|string',
 
-                //是否应该根据start_time和end_time来判断status是published还是in_progress?
+                
                 //status只由管理员手动设置为draft、published或cancelled, ,in_progress,completed状态由系统自动更新
                 'status' => 'sometimes|in:published,cancelled,draft',
                 'start_time'=>'required|date|after:now',
@@ -90,7 +90,8 @@
         }
 
         //管理员后台查看活动
-        public function index(Request $request) {
+        public function index(Request $request, Activity $activity) {
+            $activity->updateAllStatus();
             $query = Activity::query()->latest();
             if ($request->filled('search')) {
                 $search = $request->input('search');

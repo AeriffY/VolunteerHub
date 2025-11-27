@@ -56,4 +56,10 @@ class Activity extends Model
         }
         $this->save();
     }
+
+    public static function updateAllStatus() {
+        $now = now();
+        static::where('status', 'published')->where('start_time', '<=', $now)->update(['status'=>'in_progress']);
+        static::where('status', 'in_progress')->where('end_time', '<=', $now)->update(['status'=>'completed']);
+    }
 }

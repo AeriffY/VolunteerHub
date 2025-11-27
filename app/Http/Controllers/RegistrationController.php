@@ -49,8 +49,14 @@ class RegistrationController extends Controller
         }
         $activity = $registration->activity;
         //除了published阶段都无法取消
-        if($activity->status !== 'published') {
-            return back()->with('error', 'can not cancel registration');
+        if($activity->status === 'in_progress') {
+            return back()->with('error', '活动已开始, 无法取消报名');
+        }
+        if($activity->status === 'cancelled') {
+            return back()->with('error', '活动已取消');
+        }
+        if($activity->status === 'completed') {
+            return back()->with('error', '活动已结束');
         }
         
         //虽然表里有一个status的enum字段, 有registered和cancelled两个值, 但是我直接删记录了
