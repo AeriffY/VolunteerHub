@@ -96,29 +96,55 @@
                 查询 'registrations' 表中 'user_id' 为当前用户的记录
             --}}
             @forelse($registrations as $reg)
-                @php
-                    $isRegistered = $reg->status == 'registered';
-                    $statusClass = $isRegistered ? 'success' : 'secondary';
-                    $statusText = $isRegistered ? '已报名' : '已取消';
-                    $iconClass = $isRegistered ? 'bi-check-circle-fill' : 'bi-x-circle-fill';
-                @endphp
-                <a href="{{ route('activities.show', $reg->activity->id) }}" class="list-group-item list-group-item-action py-3">
-                    <div class="d-flex w-100 justify-content-between align-items-center">
-                        <h5 class="mb-1 fw-bold text-dark">{{ $reg->activity->title }}</h5>
-                        <span class="badge bg-{{ $statusClass }} py-2 px-3 fw-normal">
-                            <i class="bi {{ $iconClass }} me-1"></i> {{ $statusText }}
-                        </span>
-                    </div>
-                    <p class="mb-1 text-muted small">
-                        <i class="bi bi-calendar-event me-1"></i> 活动日期: 
-                        <span class="fw-semibold text-dark">{{ $reg->activity->start_time->format('Y年m月d日') }}</span>
-                    </p>
+    @php
+        $isRegistered = $reg->status == 'registered';
+        $statusClass = $isRegistered ? 'success' : 'secondary';
+        $statusText = $isRegistered ? '已报名' : '已取消';
+        $iconClass = $isRegistered ? 'bi-check-circle-fill' : 'bi-x-circle-fill';
+        
+        // 假设只有已完成/已签到的活动才允许上传回顾
+        $canUploadReview = $reg->activity->status === 'completed'; 
+    @endphp
+    
+    {{-- 注意：现在 list-group-item 不再是唯一的链接，而是包含内容的容器 --}}
+    <div class="list-group-item py-3">
+        <div class="d-flex w-100 justify-content-between align-items-start">
+            <div>
+                <a href="{{ route('activities.show', $reg->activity->id) }}" class="text-decoration-none">
+                    <h5 class="mb-1 fw-bold text-dark">{{ $reg->activity->title }}</h5>
                 </a>
-            @empty
-                <div class="alert alert-info mb-0 text-center">
-                    <i class="bi bi-info-circle me-1"></i> 您还没有报名任何活动。快去发现新活动吧！
-                </div>
-            @endforelse
+                <p class="mb-1 text-muted small">
+                    <i class="bi bi-calendar-event me-1"></i> 活动日期: 
+                    <span class="fw-semibold text-dark">{{ $reg->activity->start_time->format('Y年m月d日') }}</span>
+                </p>
+            </div>
+            
+            <span class="badge bg-{{ $statusClass }} py-2 px-3 fw-normal flex-shrink-0 ms-3">
+                <i class="bi {{ $iconClass }} me-1"></i> {{ $statusText }}
+            </span>
+        </div>
+        
+        {{-- 新增：按钮功能区域 --}}
+        <div class="card-footer bg-light border-0 p-4 pt-0 mt-3">
+            <div class="d-flex flex-wrap gap-2">
+                {{-- 查看详情 --}}
+                <a href="{{ route('activities.show', $reg->activity->id) }}" class="btn btn-sm btn-outline-primary">
+                    <i class="bi bi-eye"></i> 查看详情
+                </a>
+                <a href="{{ '#' }}" class="btn btn-sm btn-outline-info">
+                    <i class="bi bi-eye-fill me-1"></i> 图文回顾
+                </a>
+                <a href="{{ '#' }}" class="btn btn-sm btn-outline-secondary">
+                    <i class="bi bi-file-earmark-arrow-up-fill me-1"></i> 上传图文
+                </a>
+            </div>
+        </div>
+    </div>
+@empty
+    <div class="alert alert-info mb-0 text-center">
+        <i class="bi bi-info-circle me-1"></i> 您还没有报名任何活动。快去发现新活动吧！
+    </div>
+@endforelse
         </div>
 
     </div> {{-- /container --}}
