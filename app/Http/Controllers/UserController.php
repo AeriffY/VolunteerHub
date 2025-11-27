@@ -67,7 +67,13 @@ class UserController extends Controller
 
     public function viewProfile(Request $request) {
         $user = $request->user();
-        $registrations = Registration::with('activity')->where('user_id', $user->id)->orderBy('created_at', 'desc')->get();
+        // $registrations = Registration::with('activity')->where('user_id', $user->id)->orderBy('created_at', 'desc')->get();
+        $registrations = Registration::with(['activity'=>function($query) use ($user) {
+            $query->with(['reviews'=>function($q) use ($user) {
+                $q->where('user_id', $user->id);
+            }]);
+        }])->where('user_id', $user->id)->orderBy('created_at', 'desc')->get();
+        
         $hours = $user->hours;
         return view('profile.show', compact('user', 'registrations', 'hours'));
     }

@@ -3,6 +3,15 @@
 @section('title', '个人中心')
 
 @section('content')
+
+    <div class="mb-4">
+        @if (session('success'))
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <i class="bi bi-check-circle-fill me-2"></i> {{ session('success') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        @endif
+
     <div class="container"> {{-- 增加一个容器以居中内容 --}}
         @php
             $isLoggedIn = Auth::check();
@@ -126,19 +135,40 @@
         
         {{-- 新增：按钮功能区域 --}}
         <div class="card-footer bg-light border-0 p-4 pt-0 mt-3">
-            <div class="d-flex flex-wrap gap-2">
-                {{-- 查看详情 --}}
+            <div class="d-flex flex-wrap gap-2 align-items-center">
                 <a href="{{ route('activities.show', $reg->activity->id) }}" class="btn btn-sm btn-outline-primary">
                     <i class="bi bi-eye"></i> 查看详情
                 </a>
-                <a href="{{ '#' }}" class="btn btn-sm btn-outline-info">
-                    <i class="bi bi-eye-fill me-1"></i> 图文回顾
-                </a>
-                <a href="{{ '#' }}" class="btn btn-sm btn-outline-secondary">
-                    <i class="bi bi-file-earmark-arrow-up-fill me-1"></i> 上传图文
-                </a>
+
+                @if($reg->activity->status === 'completed')
+                    
+                    @php
+    // 获取当前用户对该活动的评论 (因为是一对多，但这里只取第一条，即他自己的那条)
+    $myReview = $reg->activity->reviews->first();
+@endphp
+                    @if($myReview)
+                        
+                        <a href="{{ route('reviews.show', $myReview->id) }}" class="btn btn-sm btn-outline-info">
+                            <i class="bi bi-chat-square-quote-fill me-1"></i> 查看我的回顾
+                        </a>
+
+                    @else
+                        <a href="{{ route('activities.review.create', $reg->activity->id) }}" class="btn btn-sm btn-outline-secondary">
+                                <i class="bi bi-file-earmark-arrow-up-fill me-1"></i> 上传图文
+                        </a>
+                    @endif
+
+                @else
+                    <small class="text-muted ms-1 border-start ps-2">
+                        @if($reg->activity->status === 'published')
+                            <i class="bi bi-hourglass"></i> 等待活动开始
+                        @elseif($reg->activity->status === 'in_progress')
+                            <i class="bi bi-play-circle-fill text-success"></i> 活动进行中
+                        @endif
+                    </small>
+                @endif
             </div>
-        </div>
+</div>
     </div>
 @empty
     <div class="alert alert-info mb-0 text-center">

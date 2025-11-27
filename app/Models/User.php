@@ -65,4 +65,8 @@ class User extends Authenticatable
     public function hours(){
         return $this->hasOne(Hours::class);
     }
+
+    public function review() {
+        return $this->hasMany(Review::class);
+    }
 }
