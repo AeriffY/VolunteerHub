@@ -107,7 +107,7 @@
                                 <form action="{{ route('admin.activities.destroy', $activity->id) }}" method="POST" class="d-inline">
                                     @csrf
                                     @method('DELETE') 
-                                    <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('确定要取消此活动吗？')">
+                                    <button type="submit" class="btn btn-sm btn-danger">
                                         <i class="bi bi-x-circle"></i> 取消活动
                                     </button>
                                 </form>
@@ -225,4 +225,5 @@
 </script>
 
 @endsection
+
 
