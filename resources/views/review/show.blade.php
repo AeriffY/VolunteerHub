@@ -15,7 +15,7 @@
             <div class="card-header bg-primary text-white p-4">
                 {{-- 回顾标题 --}}
                 <h1 class="fw-bold mb-0">
-                    <i class="bi bi-file-earmark-text me-2"></i> {{ $review->review_title }}
+                    <i class="bi bi-file-earmark-text me-2"></i> {{ $review->title }}
                 </h1>
                 {{-- 关联活动名称 --}}
                 <p class="mb-0 fs-5 mt-1">{{ $activity->title }}</p>
@@ -45,21 +45,24 @@
                 </div>
                 
                 {{-- 2. 活动照片 --}}
-                @if ($review->images->count() > 0)
-                    <h3 class="mb-4 text-primary fw-bold">活动照片 ({{ $review->images->count() }} 张)</h3>
+                
+                @if(!empty($review->image_paths) && count($review->image_paths) > 0)
+                    
+                    <h3 class="mb-4 text-primary fw-bold">活动照片 ({{ count($review->image_paths) }} 张)</h3>
+                    
                     <div class="row g-3">
-                        @foreach ($review->images as $image)
+                        @foreach ($review->image_paths as $path)
                             <div class="col-md-4 col-sm-6">
-                                {{-- 假设 ReviewImage 模型中有一个 image_path 字段存储图片路径 --}}
-                                <a href="{{ asset('storage/' . $image->image_path) }}" target="_blank">
-                                    <img src="{{ asset('storage/' . $image->image_path) }}" 
-                                         class="img-fluid rounded-3 shadow-sm hover-grow" 
-                                         alt="活动照片" 
-                                         style="aspect-ratio: 16/9; object-fit: cover;">
+                                <a href="{{ asset('storage/' . $path) }}" target="_blank">
+                                    <img src="{{ asset('storage/' . $path) }}" 
+                                        class="img-fluid rounded-3 shadow-sm hover-grow" 
+                                        alt="活动照片" 
+                                        style="aspect-ratio: 16/9; object-fit: cover;">
                                 </a>
                             </div>
                         @endforeach
                     </div>
+
                 @else
                     <div class="alert alert-warning border-0 shadow-sm" role="alert">
                         <i class="bi bi-image me-2"></i> 作者没有上传活动照片。
